@@ -106,4 +106,23 @@ def validate_time(time: str) -> bool:
     return bool(re.match(pattern, time))
 
 if __name__ == '__main__':
-    pass
+    df = pd.read_csv('59.csv', sep=';', quotechar='"', encoding='utf-16')
+    invalid_rows = []
+    for index, row in df.iterrows():
+        is_valid = (
+                validate_email(row['email']) and
+                validate_height(row['height']) and
+                validate_snils(row['snils']) and
+                validate_passport(row['passport']) and
+                validate_occupation(row['occupation']) and
+                validate_longitude(row['longitude']) and
+                validate_hex_color(row['hex_color']) and
+                validate_issn(row['issn']) and
+                validate_locale_code(row['locale_code']) and
+                validate_time(row['time'])
+        )
+        if not is_valid:
+            invalid_rows.append(index)
+    checksum = calculate_checksum(invalid_rows)
+    serialize_result(variant=59, checksum=checksum)
+
