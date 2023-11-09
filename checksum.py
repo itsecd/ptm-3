@@ -39,7 +39,7 @@ def serialize_result(variant: int, checksum: str) -> None:
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
     result_data = {
-        'variant': variant,
+        'variant': str(variant),
         'checksum': checksum
     }
 
