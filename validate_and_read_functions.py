@@ -45,14 +45,37 @@ def read_csv_file(path: str) -> list[dict[str]]:
     return dataset
 
 
-def validate_row(row, regex_patterns):
-    for header, value in zip(regex_patterns.keys(), row):
-        if not re.match(regex_patterns[header], value):
+def validate_row(row: list[str], regex_patterns: dict[str]) -> bool:
+    """validate a row in a dataset using regular expressions
+
+    Args:
+        row (list[str]): a list representing a row in the dataset
+        regex_patterns (dict[str]): a dictionary of regular expressions where keys represent
+            column names or headers, and values are the corresponding regular expressions
+            for validation
+
+    Returns:
+        bool: True if the row passes validation based on the provided regular expressions,
+            False otherwise.
+    """
+    for key, value in zip(regex_patterns.keys(), row):
+        if not re.match(regex_patterns[key], value):
             return False
     return True
 
 
-def get_invalid_rows_numbers(csv_path: str, regs_path: str):
+def get_invalid_rows_numbers(csv_path: str, regs_path: str) -> list[int]:
+    """
+    get the numbers of invalid rows in a CSV file based on provided regex patterns
+
+    Args:
+        csv_path (str): the path to the CSV file.
+        regs_path (str): the path to the file containing regex patterns in JSON format
+
+    Returns:
+        list[int]: a list of row numbers (0-indexed) that are invalid based on the provided
+            regex patterns
+    """
     invalid_rows_numbers = []
     dataset = read_csv_file(csv_path)
     regs = read_regex_patterns(regs_path)
@@ -63,9 +86,6 @@ def get_invalid_rows_numbers(csv_path: str, regs_path: str):
 
 
 if __name__ == "__main__":
-    regs = read_regex_patterns(REGEXPS_PATH)
-    dataset = read_csv_file(CSV_PATH)
     invalid_rows_numbers = get_invalid_rows_numbers(CSV_PATH, REGEXPS_PATH)
     hash_sum = calculate_checksum(invalid_rows_numbers)
-    print(hash_sum)
     serialize_result(11, hash_sum)
