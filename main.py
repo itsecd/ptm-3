@@ -2,25 +2,54 @@ import re
 import logging
 import pandas as pd
 from checksum import calculate_checksum, serialize_result
-from typing import List
+from typing import List, Callable
 
 CSV_FILE = '62.csv'
 
 
-def find_invalid_entries(dataframe: pd.DataFrame, column: str, pattern: str) -> List[int]:
+def is_correct_ip(ip: str) -> bool:
+    """
+    Функция проверяет корректность чисел в IP.
+
+    :param ip: IP в формате "[0-999].[0-999].[0-999].[0-999]".
+    :return: Корректен ли IP.
+    """
+    numbers = list(map(int, re.findall(r'\d{1,3}', ip)))
+    for number in numbers:
+        if number > 255:
+            return False
+    return True
+
+
+def is_correct_latitude(latitude: str) -> bool:
+    """
+    Функция проверяет корректность широты.
+
+    :param latitude: широта.
+    :return: Корректна ли широта.
+    """
+    latitude = float(latitude)
+    if -90 < latitude < 90:
+        return True
+    return False
+
+
+def find_invalid_entries(dataframe: pd.DataFrame, column: str, pattern: str,
+                         is_correct: Callable[[str], bool] = lambda x: True) -> List[int]:
     """
     Функция находит все неподходящие заданному шаблону записи в некотором столбце датафрейма.
 
     :param dataframe: датафрейм с данными.
     :param column: идентификатор столбца датафрейма, по записям которого происходит поиск.
     :param pattern: шаблон, определяющий корректную запись.
+    :param is_correct: Дополнительная функция проверки.
     :return: список с номерами всех записей, неудовлетворяющих шаблону.
     """
     if not (column in dataframe.keys()):
         raise KeyError(f'Dataframe contains columns {", ".join(list(dataframe.keys()))}, but given column {column}')
     invalid_entries = []
     for i in range(len(dataframe[column])):
-        if not re.fullmatch(pattern, dataframe[column][i], re.X):
+        if not re.fullmatch(pattern, dataframe[column][i], re.X) or not is_correct(dataframe[column][i]):
             invalid_entries.append(i)
     return invalid_entries
 
@@ -41,11 +70,15 @@ if __name__ == '__main__':
         row_numbers += (find_invalid_entries(dataset, 'identifier', r'\d{2}-'
                                                                     r'\d{2}/'
                                                                     r'\d{2}'))
-        row_numbers += (find_invalid_entries(dataset, 'ip_v4', r'(?: (?: 25[0-5]) | (?: 2[0-4]\d) | (?: 1?\d{,2}) )\.'
-                                                               r'(?: (?: 25[0-5]) | (?: 2[0-4]\d) | (?: 1?\d{,2}) )\.'
-                                                               r'(?: (?: 25[0-5]) | (?: 2[0-4]\d) | (?: 1?\d{,2}) )\.'
-                                                               r'(?: (?: 25[0-5]) | (?: 2[0-4]\d) | (?: 1?\d{,2}) )'))
-        # row_numbers += (find_invalid_entries(dataset, 'latitude', r'\d{2}-\d{2}/\d{2}'))
+        row_numbers += (find_invalid_entries(dataset, 'ip_v4', r'\d{1,3}\.'
+                                                               r'\d{1,3}\.'
+                                                               r'\d{1,3}\.'
+                                                               r'\d{1,3}',
+                                             is_correct=is_correct_ip))
+        row_numbers += (find_invalid_entries(dataset, 'latitude', r'-?'
+                                                                  r'\d+\.'
+                                                                  r'\d+',
+                                             is_correct=is_correct_latitude))
         # row_numbers += (find_invalid_entries(dataset, 'blood_type', r'\d{2}-\d{2}/\d{2}'))
         # row_numbers += (find_invalid_entries(dataset, 'isbn', r'\d{2}-\d{2}/\d{2}'))
         # row_numbers += (find_invalid_entries(dataset, 'uuid', r'\d{2}-\d{2}/\d{2}'))
@@ -53,4 +86,3 @@ if __name__ == '__main__':
         print(len(row_numbers))
     except KeyError as error:
         logging.error(error)
-
