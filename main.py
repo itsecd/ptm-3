@@ -1,10 +1,12 @@
 import re
+import json
 import logging
 import pandas as pd
 from checksum import calculate_checksum, serialize_result
 from typing import List, Callable
 
 CSV_FILE = '62.csv'
+PATTERNS_FILE = 'patterns.json'
 
 
 def is_correct_ip(ip: str) -> bool:
@@ -29,9 +31,18 @@ def is_correct_latitude(latitude: str) -> bool:
     :return: Корректна ли широта.
     """
     latitude = float(latitude)
-    if -90 < latitude < 90:
-        return True
-    return False
+    return -90 < latitude < 90
+
+
+def is_correct_date(date: str) -> bool:
+    """
+    Функция проверяет корректность даты.
+
+    :param date: дата в формате yyyy-mm-dd.
+    :return: Корректна ли дата.
+    """
+    date = list(map(int, re.findall(r'\d+', date)))
+    return 0 < date[0] < 2025 and 0 < date[1] < 13 and 0 < date[2] < 32
 
 
 def find_invalid_entries(dataframe: pd.DataFrame, column: str, pattern: str,
@@ -51,38 +62,26 @@ def find_invalid_entries(dataframe: pd.DataFrame, column: str, pattern: str,
     for i in range(len(dataframe[column])):
         if not re.fullmatch(pattern, dataframe[column][i], re.X) or not is_correct(dataframe[column][i]):
             invalid_entries.append(i)
+            print(dataframe[column][i])
     return invalid_entries
 
 
 if __name__ == '__main__':
     dataset = pd.read_csv(CSV_FILE, sep=';', quotechar='"', encoding='utf-16')
+    with open(PATTERNS_FILE, 'r') as fp:
+        patterns = json.load(fp)
     row_numbers = []
     try:
-        row_numbers += (find_invalid_entries(dataset, 'telephone', r'\+7-'
-                                                                   r'\(\d{3}\)-'
-                                                                   r'\d{3}-'
-                                                                   r'\d{2}-'
-                                                                   r'\d{2}'))
-        row_numbers += (find_invalid_entries(dataset, 'http_status_message', r'\d{3}'
-                                                                             r'\s'
-                                                                             r'.+'))
-        row_numbers += (find_invalid_entries(dataset, 'inn', r'\d{12}'))
-        row_numbers += (find_invalid_entries(dataset, 'identifier', r'\d{2}-'
-                                                                    r'\d{2}/'
-                                                                    r'\d{2}'))
-        row_numbers += (find_invalid_entries(dataset, 'ip_v4', r'\d{1,3}\.'
-                                                               r'\d{1,3}\.'
-                                                               r'\d{1,3}\.'
-                                                               r'\d{1,3}',
-                                             is_correct=is_correct_ip))
-        row_numbers += (find_invalid_entries(dataset, 'latitude', r'-?'
-                                                                  r'\d+\.'
-                                                                  r'\d+',
-                                             is_correct=is_correct_latitude))
-        # row_numbers += (find_invalid_entries(dataset, 'blood_type', r'\d{2}-\d{2}/\d{2}'))
-        # row_numbers += (find_invalid_entries(dataset, 'isbn', r'\d{2}-\d{2}/\d{2}'))
-        # row_numbers += (find_invalid_entries(dataset, 'uuid', r'\d{2}-\d{2}/\d{2}'))
-        # row_numbers += (find_invalid_entries(dataset, 'date', r'\d{2}-\d{2}/\d{2}'))
+        row_numbers += (find_invalid_entries(dataset, 'telephone', patterns['telephone']))
+        row_numbers += (find_invalid_entries(dataset, 'http_status_message', patterns['http_status_message']))
+        row_numbers += (find_invalid_entries(dataset, 'inn', patterns['inn']))
+        row_numbers += (find_invalid_entries(dataset, 'identifier', patterns['identifier']))
+        row_numbers += (find_invalid_entries(dataset, 'ip_v4', patterns['ip_v4'], is_correct_ip))
+        row_numbers += (find_invalid_entries(dataset, 'latitude', patterns['latitude'], is_correct_latitude))
+        row_numbers += (find_invalid_entries(dataset, 'blood_type', patterns['blood_type']))
+        row_numbers += (find_invalid_entries(dataset, 'isbn', patterns['isbn']))
+        row_numbers += (find_invalid_entries(dataset, 'uuid', patterns['uuid']))
+        row_numbers += (find_invalid_entries(dataset, 'date', patterns['date'], is_correct_date))
         print(len(row_numbers))
     except KeyError as error:
         logging.error(error)
