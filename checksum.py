@@ -19,7 +19,7 @@ def calculate_checksum(row_numbers: List[int]) -> str:
     Хотя что-то мне подсказывает, что обязательно найдется человек, у которого с этим возникнут проблемы.
     Которому я отвечу, что все написано в докстринге ¯\_(ツ)_/¯
 
-    :param row_numbers: список целочисленных номеров строк csv-файла, на которых были найдены ошибки валидации
+    :param row_numbers: список целочисленных номеров строк csv-файла, на которых были найдены ошибки валидации.
     :return: md5 хеш для проверки через github action
     """
     row_numbers.sort()
@@ -35,7 +35,9 @@ def serialize_result(variant: int, checksum: str) -> None:
     ВНИМАНИЕ, ВАЖНО! На json натравлен github action, который проверяет корректность выполнения лабораторной.
     Так что не перемещайте, не переименовывайте и не изменяйте его структуру, если планируете успешно сдать лабу.
 
-    :param variant: номер вашего варианта
+    :param variant: номер вашего варианта.
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
-    pass
+    result = {'variant': str(variant), 'checksum': checksum}
+    with open('result.json', 'w') as fp:
+        json.dump(result, fp, indent=2)

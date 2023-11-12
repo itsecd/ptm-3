@@ -5,6 +5,10 @@ import pandas as pd
 from checksum import calculate_checksum, serialize_result
 from typing import List, Callable
 
+logger = logging.getLogger()
+logger.setLevel('INFO')
+
+VARIANT = 62
 CSV_FILE = '62.csv'
 PATTERNS_FILE = 'patterns.json'
 
@@ -62,7 +66,7 @@ def find_invalid_entries(dataframe: pd.DataFrame, column: str, pattern: str,
     for i in range(len(dataframe[column])):
         if not re.fullmatch(pattern, dataframe[column][i], re.X) or not is_correct(dataframe[column][i]):
             invalid_entries.append(i)
-            print(dataframe[column][i])
+    logging.info(f'Column {column}: {len(invalid_entries)} invalid entries was found')
     return invalid_entries
 
 
@@ -70,18 +74,20 @@ if __name__ == '__main__':
     dataset = pd.read_csv(CSV_FILE, sep=';', quotechar='"', encoding='utf-16')
     with open(PATTERNS_FILE, 'r') as fp:
         patterns = json.load(fp)
-    row_numbers = []
+    row_numbers = set()
     try:
-        row_numbers += (find_invalid_entries(dataset, 'telephone', patterns['telephone']))
-        row_numbers += (find_invalid_entries(dataset, 'http_status_message', patterns['http_status_message']))
-        row_numbers += (find_invalid_entries(dataset, 'inn', patterns['inn']))
-        row_numbers += (find_invalid_entries(dataset, 'identifier', patterns['identifier']))
-        row_numbers += (find_invalid_entries(dataset, 'ip_v4', patterns['ip_v4'], is_correct_ip))
-        row_numbers += (find_invalid_entries(dataset, 'latitude', patterns['latitude'], is_correct_latitude))
-        row_numbers += (find_invalid_entries(dataset, 'blood_type', patterns['blood_type']))
-        row_numbers += (find_invalid_entries(dataset, 'isbn', patterns['isbn']))
-        row_numbers += (find_invalid_entries(dataset, 'uuid', patterns['uuid']))
-        row_numbers += (find_invalid_entries(dataset, 'date', patterns['date'], is_correct_date))
-        print(len(row_numbers))
+        row_numbers.update(find_invalid_entries(dataset, 'telephone', patterns['telephone']))
+        row_numbers.update(find_invalid_entries(dataset, 'http_status_message', patterns['http_status_message']))
+        row_numbers.update(find_invalid_entries(dataset, 'inn', patterns['inn']))
+        row_numbers.update(find_invalid_entries(dataset, 'identifier', patterns['identifier']))
+        row_numbers.update(find_invalid_entries(dataset, 'ip_v4', patterns['ip_v4'], is_correct_ip))
+        row_numbers.update(find_invalid_entries(dataset, 'latitude', patterns['latitude'], is_correct_latitude))
+        row_numbers.update(find_invalid_entries(dataset, 'blood_type', patterns['blood_type']))
+        row_numbers.update(find_invalid_entries(dataset, 'isbn', patterns['isbn']))
+        row_numbers.update(find_invalid_entries(dataset, 'uuid', patterns['uuid']))
+        row_numbers.update(find_invalid_entries(dataset, 'date', patterns['date'], is_correct_date))
+        checksum = calculate_checksum(list(row_numbers))
+        serialize_result(VARIANT, checksum)
+        logging.info('Checksum was successfully calculated and serialized')
     except KeyError as error:
         logging.error(error)

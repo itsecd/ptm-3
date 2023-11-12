@@ -15,4 +15,4 @@ PATTERNS = {
 
 if __name__ == '__main__':
     with open('patterns.json', 'w') as fp:
-        json.dump(PATTERNS, fp)
+        json.dump(PATTERNS, fp, indent=2)
