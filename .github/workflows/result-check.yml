@@ -14,7 +14,9 @@ jobs:
   check-result:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: ActionsTools/read-json-action@main
         name: acquiring your results
         id: your_results
