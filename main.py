@@ -1,128 +1,57 @@
-import pandas as pd
+import csv
 import re
+import os
 from checksum import calculate_checksum, serialize_result
 
 
-def validate_email(email: str) -> bool:
+PATTERNS = {
+    "email": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+    "height": "^\\d\\.\\d{2}$",
+    "snils": "^\\d{11}$",
+    "passport": "^\\d{2}\\s\\d{2}\\s\\d{6}$",
+    "occupation": "^[a-zA-Zа-яА-ЯёЁ\\s-]+$",
+    "longitude": "^-?((180(\\.0+)?|1[0-7]?\\d(\\.\\d+)?|\\d{1,2}(\\.\\d+)?)|0(\\.\\d+)?)$",
+    "hex_color": "^#([a-f0-9]{6}|[a-f0-9]{3})$",
+    "issn": "^\\d{4}-\\d{4}$",
+    "locale_code": "^([a-z]{2,3})(?:-([a-zA-Z]{2,4}))?(?:-([a-zA-Z0-9-]+))?$",
+    "time": "^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)\\.(\\d{1,6})$"
+}
+
+
+def is_valid_row(row: list[str]) -> bool:
     """
-    метод проверки соответствия почты (email) с шаблоном
-    re.compile - компилирует регулярное выражение в объект типа шаблон
-    re.match - проверяет уже на соответствие шаблону
-    :param email: почта
+    метод который проверяет соответствует ли каждое значение в строке
+    шаблону в PATTERNS.
+    :param row: list[str]
     :return: bool
     """
-    pattern = re.compile(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-    return bool(re.match(pattern, email))
+    flag = True
+    for key, value in zip(PATTERNS.keys(), row):
+        if not re.match(PATTERNS[key], value):
+            flag = False
+            return flag
+    return flag
 
 
-def validate_height(height: str) -> bool:
+def get_invalid_rows(path_to_csv_file: str) -> list[int]:
     """
-    метод проверки соответствия роста (height) с шаблоном
-    :param height: рост
-    :return: bool
+    метод который возвращает список индексов строк CSV-файла, не соответствующих ожидаемым шаблонам.
+    :param path_to_csv_file: str
+    :return: list[int]
     """
-    pattern = re.compile(r'^\d+(\.\d{1,2})?$')
-    return bool(re.match(pattern, height)) and 1.0 <= float(height) <= 3.0
+    index_list = []
+    data = []
+    with open(path_to_csv_file, "r", newline="", encoding="utf-16") as file:
+        read_data = csv.reader(file, delimiter=";")
+        for row in read_data:
+            data.append(row)
+    data.pop(0)
+    for i, row in enumerate(data):
+        if not is_valid_row(row):
+            index_list.append(i)
+    return index_list
 
-
-def validate_snils(snils: str) -> bool:
-    """
-    метод проверки соответствия снилс с шаблоном
-    :param snils: снилс
-    :return: bool
-    """
-    pattern = re.compile(r'^\d{11}$')
-    return bool(re.match(pattern, snils))
-
-
-def validate_passport(passport: str) -> bool:
-    """
-    метод проверки соответствия паспорта с шаблоном
-    :param passport: паспорт
-    :return: bool
-    """
-    pattern = re.compile(r'^\d{2}\s\d{2}\s\d+$')
-    return bool(re.match(pattern, passport))
-
-
-def validate_occupation(occupation: str) -> bool:
-    """
-    метод проверки соответствия профессия с шаблоном
-    :param occupation: профессия
-    :return: bool
-    """
-    pattern = re.compile(r"^[A-Za-zА-Яа-я-'\s]+$")
-    return bool(re.match(pattern, occupation))
-
-
-def validate_longitude(longitude: str) -> bool:
-    """
-    метод проверки соответствия долготы с шаблоном
-    :param longitude: долготы
-    :return: bool
-    """
-    pattern = re.compile(r'^-?\d+(\.\d+)?$')
-    return bool(re.match(pattern, longitude))
-
-
-def validate_hex_color(hex_color: str) -> bool:
-    """
-    метод проверки соответствия цвета с шаблоном
-    :param hex_color: цвет
-    :return: bool
-    """
-    pattern = re.compile(r'^#[0-9A-Fa-f]{6}$')
-    return bool(re.match(pattern, hex_color))
-
-
-def validate_issn(issn: str) -> bool:
-    """
-    метод проверки соответствия 8-значного международного стандартного
-    сериального номера с шаблоном
-    :param issn: 8-значный международный стандартный сериальный номер
-    :return: bool
-    """
-    pattern = re.compile(r'^\d{4}-\d{4}$')
-    return bool(re.match(pattern, issn))
-
-
-def validate_locale_code(locale_code: str) -> bool:
-    """
-    метод проверки соответствия настройки языка с шаблоном
-    :param locale_code: региональная настройка языка в формате MS-LCID
-    :return: bool
-    """
-    pattern = re.compile(r'^[a-z]{2}-[a-z]+(,[a-z]{2}-[a-z]+)*$')
-    return bool(re.match(pattern, locale_code))
-
-
-def validate_time(time: str) -> bool:
-    """
-    метод проверки соответствия времени с шаблоном
-    :param time: время
-    :return: bool
-    """
-    pattern = re.compile(r'^([01]\d|2[0-3]):[0-5]\d:[0-5]\d(\.\d{1,6})?$')
-    return bool(re.match(pattern, time))
-
-if __name__ == '__main__':
-    df = pd.read_csv('59.csv', sep=';', quotechar='"', encoding='utf-16')
-    invalid_rows = []
-    for index, row in df.iterrows():
-        is_valid = (
-                validate_email(row['email']) and
-                validate_height(row['height']) and
-                validate_snils(row['snils']) and
-                validate_passport(row['passport']) and
-                validate_occupation(row['occupation']) and
-                validate_longitude(row['longitude']) and
-                validate_hex_color(row['hex_color']) and
-                validate_issn(row['issn']) and
-                validate_locale_code(row['locale_code']) and
-                validate_time(row['time'])
-        )
-        if not is_valid:
-            invalid_rows.append(index)
-    checksum = calculate_checksum(invalid_rows)
-    serialize_result(variant=59, checksum=checksum)
-
+if __name__ == "__main__":
+    path_to_csv_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "59.csv")
+    invalid_rows = get_invalid_rows(path_to_csv_file)
+    serialize_result(59, calculate_checksum(invalid_rows))
