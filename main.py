@@ -8,11 +8,11 @@ VALIDATION_RULES = {
     'snils_regex': r'^\d{11}$',
     'passport_regex': r'^\d{2}\s\d{2}\s\d{6}$',
     'occupation_regex': r'^[А-Яа-я\s]+$',
-    'longitude_regex': r'^-?\d+(\.\d+)?$,
+    'longitude_regex': r'^-?\d+(\.\d+)?$',
     'hex_color_regex': r'^#[0-9A-Fa-f]{6}$',
     'issn_regex': r'^\d{4}-\d{4}$',
     'locale_code_regex': r'^[a-z]{2}-[a-z]{2}$',
-    'time_regex': r'^\d{2}:\d{2}:\d{2}\.\d{6}$
+    'time_regex': r'^\d{2}:\d{2}:\d{2}\.\d{6}$'
 }
 FILE_PATH = '35.csv'
 
