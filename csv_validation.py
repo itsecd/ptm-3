@@ -1,7 +1,9 @@
-import pandas as pd
+import logging
 import re
 from typing import List
+
 from checksum import calculate_checksum, serialize_result
+from pandas import read_csv as pd
 
 
 VALIDATION_RULES = {
@@ -30,14 +32,15 @@ def validate_csv(file_path: str, validation_rules: dict[str]) -> List[int]:
     """
     invalid_rows_list = []
     try:
-        df = pd.read_csv(file_path, sep=';', quotechar='"', encoding='utf-16')
+        df = pd(file_path, sep=';', quotechar='"', encoding='utf-16')
         for index, row in df.iterrows():
             for column, regex in validation_rules.items():
                 if not re.fullmatch(regex, str(row[column])):
                     invalid_rows_list.append(index)
                     break
     except Exception as e:
-        print(f'Произошла ошибка при чтении файла: {e}')
+        logging.error(f'Произошла ошибка при чтении файла: {e}')
+
     
     return invalid_rows_list
     
@@ -47,5 +50,4 @@ if __name__ == '__main__':
     
     hash_sum = calculate_checksum(invalid_list)
     serialize_result(variant=23, checksum=hash_sum)
-    
     
