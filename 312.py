@@ -30,7 +30,14 @@ def read_csv(path: str) -> list:
     return rows
 
 
+def check_row(row: list) -> bool:
+    keys = list(PATTERNS.keys())
+    for i in range(len(keys)):
+        flag = bool(re.match(PATTERNS[keys[i]], row[i]))
+        if not flag:
+            return flag
+    return True
+
 if __name__ == "__main__":
     rw = read_csv(TABLE_PATH)
-    print(rw[8][9])
-    print(re.match(PATTERNS["date"], rw[8][9]))
+    print(check_row(rw[4]))
