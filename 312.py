@@ -38,6 +38,14 @@ def check_row(row: list) -> bool:
             return flag
     return True
 
+
+def find_invalid_rows(path: str) -> list[int]:
+    invalid_rows = []
+    data = read_csv(path)
+    for i in range(len(data)):
+        if not check_row(data[i]):
+            invalid_rows.append(i)
+    return invalid_rows
 if __name__ == "__main__":
-    rw = read_csv(TABLE_PATH)
-    print(check_row(rw[4]))
+    array = find_invalid_rows(TABLE_PATH)
+    print(len(array))
