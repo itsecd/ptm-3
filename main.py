@@ -5,16 +5,16 @@ import re
 from checksum import serialize_result, calculate_checksum
 
 PATTERNS = {
-    "email": r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-    "http_status_message": r'\b\d{3}\b',
-    "inn": r'\d{12}',
-    "passport": r'\b\d+\s\d+\s\d+\b',
-    "ip_v4": r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b',
-    "latitude": r'[-+]?\d+\.\d+',
-    "hex_color": r'#[a-fA-F0-9]{6}\b',
-    "isbn":  r'\b\d{1,3}(?:-?\d){1,5}-?\d{1,7}-?\d\b',
-    "uuid": r'\b[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\b',
-    "time": r'\b(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d\b'
+    "email": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+    "http_status_message": "\\d{3}\\s[a-zA-Z]{1,}",
+    "inn": r'^\b\d{12}\b$',
+    "passport": "^\\d{2}\\s\\d{2}\\s\\d{6}$",
+    "ip_v4": "^\\d{1,3}\\.+\\d{1,3}\\.+\\d{1,3}\\.+\\d{1,3}$",  # yes
+    "latitude": "^-?(?:90(?:\\.0+)?|[1-8]?\\d(?:\\.\\d+)?)$", # yes
+    "hex_color": "^#([a-f0-9]{6}|[a-f0-9]{3})$",#yes
+    "isbn":  "\\d+-\\d+-\\d+-\\d+(:?-\\d+)?", #yes
+    "uuid": r'^\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b$', #yes
+    "time": "^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)\\.(\\d{1,6})$" #yes
 }
 
 
@@ -25,11 +25,13 @@ def is_valid_line(row: list[str]) -> bool:
     :param row: list[str]
     :return: bool
     """
+
+
     flag = True
     for k, v in zip(PATTERNS.keys(), row):
         if not re.match(PATTERNS[k], v):
             flag = False
-            print(k)
+            print(k + " : " + v)
             return flag
     return flag
 
