@@ -17,7 +17,12 @@ PATTERNS = {
 }
 
 
-def read_csv(path: str) -> list:
+def read_csv(path: str) -> list[list[str]]:
+    """
+
+    :param path:
+    :return:
+    """
     rows = []
     try:
         with open(path, "r", encoding="utf-16") as file:
