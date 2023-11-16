@@ -33,7 +33,7 @@ def match_data(research_data :list, names :list) -> tuple:
         tuple(dict, dict): возврощается массив с номерами строк, где были найдены неверные данные
                             и словарь с данными, которые подходят для дальнйшей обработки
     """
-    count_not_valid_data = []
+    rows_not_valid_data = []
     valid_data = {}
     for n in names:
         valid_data[n] = []
@@ -41,7 +41,7 @@ def match_data(research_data :list, names :list) -> tuple:
     for row in research_data:
         for i in range(10):
             if re.fullmatch(valid_dict[names[i]], row[i]) == None:
-                count_not_valid_data.append(k)
+                rows_not_valid_data.append(k)
             else:
                 valid_data[names[i]].append(row[i])
         k += 1
