@@ -35,7 +35,7 @@ def validate_row(row: list, patterns: dict) -> bool:
     for key, value in zip(patterns.keys(), row):
         if not re.match(patterns[key], value):
             return False
-        return True
+    return True
 
 
 def validate_data(path_json: str, path_csv: str) -> None:
@@ -46,6 +46,7 @@ def validate_data(path_json: str, path_csv: str) -> None:
         if not validate_row(data[i], patterns):
             nonvalidate_rows.append(i)
     serialize_result(5, calculate_checksum(nonvalidate_rows))
+    
 
 
 if __name__ == "__main__":
