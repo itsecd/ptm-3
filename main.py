@@ -1,20 +1,7 @@
-import re
 import csv
 import json
-
-
-REGEXPS = {
-    "email": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
-    "http_status_message": "^\d{3}\s[^\n\r]+$",
-    "inn": "^\d{12}$",
-    "passport": "^\d{2} \d{2} \d{6}$",
-    "ip_v4": "^(\d{1,3}\.){3}\d{1,3}$",
-    "latitude": "^-?\d+(\.\d+)?$",
-    "hex_color": "^#[0-9a-fA-F]{6}$",
-    "isbn": "\d+-\d+-\d+-\d+(:?-\d+)?$",
-    "uuid": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-    "time": "^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)\.(\d{1,6})$",
-}
+import re
+from checksum import serialize_result, calculate_checksum
 
 
 def read_csv(path_to_csv: str) -> list:
@@ -26,13 +13,40 @@ def read_csv(path_to_csv: str) -> list:
                 data.append(row)
             data.pop(0)
     except FileNotFoundError:
-        print(f"Файл '{path_to_csv}' не найден.")
+        print(f"Файл {path_to_csv} не найден.")
     except Exception as e:
         print(f"Произошла ошибка при чтении файла: {e}")
     return data
 
 
-with open('REGEXPS.json', 'w') as json_file:
-    json.dump(REGEXPS, json_file, indent=10)
+def read_json(path_json: str) -> dict:
+    data_to_read = {}
+    try:
+        with open(path_json, "r") as json_file:
+            data_to_read = json.load(json_file)
+    except FileNotFoundError:
+        print(f"Файл {path_json} не найден.")
+    except Exception as e:
+        print(f"Произошла ошибка при чтении файла: {e}")
+    return data_to_read
 
-file_path = "5.csv"
+
+def validate_row(row: list, patterns: dict) -> bool:
+    for key, value in zip(patterns.keys(), row):
+        if not re.match(patterns[key], value):
+            return False
+        return True
+
+
+def validate_data(path_json: str, path_csv: str) -> None:
+    patterns = read_json(path_json)
+    data = read_csv(path_csv)
+    nonvalidate_rows = []
+    for i in range(len(data)):
+        if not validate_row(data[i], patterns):
+            nonvalidate_rows.append(i)
+    serialize_result(5, calculate_checksum(nonvalidate_rows))
+
+
+if __name__ == "__main__":
+    validate_data("REGEXPS.json", "5.csv")
