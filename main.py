@@ -1,6 +1,8 @@
 import csv
 import re
 
+from checksum import calculate_checksum, serialize_result
+
 PATH_TABLE = "15.csv"
 PATTERNS = {
     "email": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
@@ -45,5 +47,6 @@ def find_invalid_numbers(table: list[list[str]]) -> list[int]:
 if __name__ == "__main__":
     array = read_table(PATH_TABLE)
     array.pop(6402)
-    print(len(find_invalid_numbers(array)))
-
+    numbers = find_invalid_numbers(array)
+    sum = calculate_checksum(numbers)
+    serialize_result(15, sum)
