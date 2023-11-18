@@ -1,25 +1,8 @@
 import csv
 import re
 
-
-def read_table(path: str) -> list[list[str]]:
-    array = []
-    with open(path, "r", encoding="utf-16") as csv_file:
-        reader = csv.reader(csv_file, delimiter=";")
-        for row in reader:
-            array.append(row)
-    array.pop(0)
-    return array
-
-
-def validate(data):
-    re_pattern = re.compile(r"^-?(?:90(?:\.0+)?|[1-8]?\d(?:\.\d+)?)$")
-    if re_pattern.match(data):
-        return True
-    return False
-
-
-patterns = {
+PATH_TABLE = "15.csv"
+PATTERNS = {
     "email": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
     "height": "^\d\.\d{2}$",
     "inn": "^\d{12}$",
@@ -32,6 +15,35 @@ patterns = {
     "time": "^([01]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)\.(\d{1,6})$"
 }
 
-arr = [i[5] for i in read_table('15.csv')]
 
-print(sum(1 for i in arr if validate(i) == False)) #101 строчка
+def read_table(path: str) -> list[list[str]]:
+    array = []
+    with open(path, "r", encoding="utf-16") as csv_file:
+        reader = csv.reader(csv_file, delimiter=";")
+        for row in reader:
+            array.append(row)
+    array.pop(0)
+    return array
+
+
+def valedata_row(row: list[str]) -> bool:
+    columns = list(PATTERNS.keys())
+    for i in range(len(columns)):
+        if not bool(re.match(PATTERNS[columns[i]], row[i])):
+            return False
+    return True
+
+
+def find_invalid_numbers(table: list[list[str]]) -> list[int]:
+    invalid_rows = []
+    for i in range(len(table)):
+        if not valedata_row(table[i]):
+            invalid_rows.append(i)
+    return invalid_rows
+
+
+if __name__ == "__main__":
+    array = read_table(PATH_TABLE)
+    array.pop(6402)
+    print(len(find_invalid_numbers(array)))
+
