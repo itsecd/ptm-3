@@ -10,7 +10,7 @@ logger.setLevel("INFO")
 TABLE_PATH = "12.CSV"
 PATTERNS = {
     "telephone": "^\\+7-\\(\\d{3}\\)-\\d{3}-\\d{2}-\\d{2}$",
-    "height": "^(?:1|2)\\.\\d{2}$",
+    "height": "^(?:0|1|2)\\.\\d{2}$",
     "snils": "^\\d{11}$",
     "identifier": "^\\d{2}-\\d{2}/\\d{2}$",
     "occupation": "^[a-zA-Zа-яА-ЯёЁ\\s-]+$",
@@ -73,4 +73,5 @@ if __name__ == "__main__":
     invalid_numbers = find_invalid_rows(TABLE_PATH)
     hash_sum = calculate_checksum(invalid_numbers)
     serialize_result(VARIANT, hash_sum)
+
 
