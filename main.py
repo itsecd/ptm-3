@@ -19,6 +19,14 @@ PATTERNS = {
 
 
 def read_table(path: str) -> list[list[str]]:
+    """" Function for reading data
+
+    Args:
+        path (str): path to the table
+
+    Returns:
+        list[list[str]]: two-dimensional array with data
+    """
     array = []
     with open(path, "r", encoding="utf-16") as csv_file:
         reader = csv.reader(csv_file, delimiter=";")
@@ -28,7 +36,15 @@ def read_table(path: str) -> list[list[str]]:
     return array
 
 
-def valedata_row(row: list[str]) -> bool:
+def validate_row(row: list[str]) -> bool:
+    """ Function for checking the row for validity
+
+    Args:
+        row (list[str]): row data
+
+    Returns:
+        bool: False or True
+    """
     columns = list(PATTERNS.keys())
     for i in range(len(columns)):
         if not bool(re.match(PATTERNS[columns[i]], row[i])):
@@ -37,9 +53,17 @@ def valedata_row(row: list[str]) -> bool:
 
 
 def find_invalid_numbers(table: list[list[str]]) -> list[int]:
+    """ Function that find invalid rows and puts this numbers into list
+
+    Args:
+        table (list[list[str]]): two-dimensional array with data
+
+    Returns:
+        list[int]: list with numbers of invalid rows
+    """
     invalid_rows = []
     for i in range(len(table)):
-        if not valedata_row(table[i]):
+        if not validate_row(table[i]):
             invalid_rows.append(i)
     return invalid_rows
 
