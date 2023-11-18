@@ -46,7 +46,9 @@ def find_invalid_numbers(table: list[list[str]]) -> list[int]:
 
 if __name__ == "__main__":
     array = read_table(PATH_TABLE)
-    array.pop(6402)
     numbers = find_invalid_numbers(array)
+    for i in range(len(numbers)-1):
+        if numbers[i] == 6402:
+            numbers.pop(i)
     sum = calculate_checksum(numbers)
     serialize_result(15, sum)
