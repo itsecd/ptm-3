@@ -24,6 +24,7 @@ def check_column(dataset: pd.DataFrame, column: str, pattern: str, check_correct
         if not re.fullmatch(pattern, dataset[column][i], re.X) or not check_correct(dataset[column][i]):
             result.append(i)
     print(f"In '{column}' find {len(result)} incorrect cells")
+    print(result)
     return result
 
 
@@ -32,18 +33,18 @@ if __name__ == "__main__":
     dataset = pd.read_csv(CSV_PATH, sep=";", encoding="utf-16")
     patterns = []
     patterns = read_patterns(PATTERNS_PATH)
-    result = []
+    result = set()
     for col in dataset.columns:
         if col == "date":
-            result.append(check_column(
+            result.update(check_column(
                 dataset, col, patterns[col], check_data_col))
         if col == "ip_v4":
-            result.append(check_column(
+            result.update(check_column(
                 dataset, col, patterns[col], check_ipv4))
         if col == "longitude":
-            result.append(check_column(
+            result.update(check_column(
                 dataset, col, patterns[col], check_longitude))
         else:
-            result.append(check_column(dataset, col, patterns[col]))
-    print(calculate_checksum(result))
-    serialize_result(VARIANT, calculate_checksum(result))
+            result.update(check_column(dataset, col, patterns[col]))
+    print(calculate_checksum(list(result)))
+    serialize_result(VARIANT, calculate_checksum(list(result)))
