@@ -1,71 +1,70 @@
 import re
+import csv
 import pandas as pd
+from checksum import calculate_checksum, serialize_result
+from check_func import check_longitude, check_ip, check_date
 
 PATTERNS = {
-    "telephone": "\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}",
-    "http_status_message": "\d{3} [a-zA-Z0-9_ ]{1,}",
-    "snils": "\\d{11}",
-    "identifier": "\\d{2}-\\d{2}/\\d{2}",
-    "ip_v4": "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}",
-    "longitude": "^-?((180(\\.0+)?|1[0-7]?\\d(\\.\\d+)?|\\d{1,2}(\\.\\d+)?)|0(\\.\\d+)?)$",
-    "blood_type": "^(?:O|A|B|AB)[\\+\u2212]$",
-    "isbn": "\d+-\d+-\d+-\d+(:?-\d+)?",
-    "locale_code": "^([a-z]{2,3})(?:-([a-zA-Z]{2,4}))?(?:-([a-zA-Z0-9-]+))?$",
-    "date": "\d{4}-\d{2}-\d{2}"
+    "telephone": "^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
+    "http_status_message": "^\d{3}\s[a-zA-Z0-9_ ]{1,}",
+    "snils": "^\d{11}$",
+    "identifier": "^\d{2}-\d{2}/\d{2}$",
+    "ip_v4": "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",
+    "longitude": "^-? \d{1,3} \. \d+$",
+    "blood_type": "^(?: AB | A | B | O) [+\u2212]$",
+    "isbn": "^\d+-\d+-\d+-\d+(:?-\d+)?$",
+    "locale_code": "^[a-z]{2} (-[a-z]{2})?$",
+    "date": "^\d{4}-\d{2}-\d{2}$"
   }
 
 def check_row(row_str:str) -> bool:
+    """
+    Функция, которая проверяет строку на валидность
+
+    :param row_str: строка, которую нужно проверить на валидность
+    :return: возвращет True, если строка прошла валидацию, False - иначе
+    """    
     for key, value in zip(PATTERNS.keys(), row_str):
-            print(key, value)
-            if key == 'longitude':
-                if check_longitude(value) == False:
-                    return False
-            if key == 'ip_v4':
-                if check_ip(value) == False:
-                    return False   
-            if key == 'snils':
-                if check_snils(value) == False:
-                    return False  
-            if not re.match(PATTERNS[key], value):
+        
+        if not re.match(PATTERNS[key], value, re.X):                                          
+            return False   
+        if key == 'longitude':
+            if check_longitude(value) == False:                                  
                 return False
+        if key == 'ip_v4':
+            if check_ip(value) == False:                                                       
+                return False 
+        if key == 'date':
+            if check_date(value) == False:                                                      
+                return False        
+    
     return True
 
 
-def check_ip(ip: str) -> bool:
-    numbers = list(map(int, re.findall(r'\d{1,3}', ip)))
-    for number in numbers:
-        if number > 255:
-            return False
-    return True
+def get_invalid_indexs(data: list[list[str]]) -> list[int]:
+    """
+    Функция, для подсчета и записи в список невалидных индексов
 
-def check_snils(snils: str) -> bool:
-    if snils[0] == '0':
-            return False
-    return True
-
-
-def check_longitude(longitude: str) -> bool:
-  
-    longitude = float(longitude)
-    return -90 < longitude < 90    
-
-
-def check_item(row_item:str , pattern: str):
-    return re.match(pattern, row_item)
-
-
-def get_invalid_indexs(data:pd.DataFrame) -> list[int]:
+    :param data: исходный список строк
+    :return invalid_indexs: список с невалидными индексами
+    """  
     invalid_indexs = []
     
-    for index, row in data.iterrows():
-        row_str = row
-        if not check_row(row):
-            invalid_indexs.append(index)
-        print(index)
-        
-       
+    for row in data:        
+        if not check_row(row):           
+            invalid_indexs.append(data.index(row))                 
     return invalid_indexs 
 
+
 if __name__ == '__main__':
-    data = pd.read_csv('2.csv', sep=';', quotechar='"', encoding='utf-16')
-    get_invalid_indexs(data)
+    variant = 2
+    data = []
+    with open("2.csv", "r", newline="", encoding="utf-16") as file:
+        read_data = csv.reader(file, delimiter=";")
+        for row in read_data:
+            data.append(row)
+    data.pop(0)   
+    invalid_indexs = get_invalid_indexs(data)   
+    print(len(invalid_indexs))
+    print(calculate_checksum(invalid_indexs))
+    serialize_result(variant, calculate_checksum(list(invalid_indexs)))
