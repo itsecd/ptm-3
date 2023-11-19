@@ -26,10 +26,10 @@ def check_date(date: str) -> bool:
 
 def check_longitude(longitude: str) -> bool: 
     """
-    Функция, которая проверяет широту
+    Функция, которая проверяет долготу
 
-    :param longitude: широта, которую нужно проверить
-    :return: возвращет True, если широта прошела валидацию, False - иначе
+    :param longitude: долготу, которую нужно проверить
+    :return: возвращет True, если долгота прошела валидацию, False - иначе
     """   
     longitude = float(longitude)
     return -180 < longitude < 180 
