@@ -10,7 +10,7 @@ PATTERNS = {
     "snils":"^\d{11}$",
     "indentifier":"^\d{2}-\d{2}/\d{2}$",
     "occupation":"^[a-zA-Zа-яА-ЯёЁ\s-]+$",
-    "longitude":"^-?\d{1,3}\.\d+$",
+    "longitude":"^-?((1[0-7]\d)|([1-9]\d?)|180)(?:\.\d+)$",
     "blood_type":"^(?:A|B|AB|O)(?:\+|\u2212)$",
     "issn":"^\d{4}-\d{4}$",
     "locale_code":"^[a-z]{2}(-[a-z]{2})?$",
