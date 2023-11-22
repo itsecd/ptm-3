@@ -3,16 +3,16 @@ import re
 from checksum import serialize_result, calculate_checksum
 
 PATTERNS = {
-    "telephone": r'\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}',
+    "telephone": "^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
     "height": "^(?:0|1|2)\.\d{2}$",
-    'inn': r'\d{12}',
-    'identifier': r'\d{2}-\d{2}/\d{2}',
+    "inn": "^\d{12}$",
+    "identifier": "^\d{2}-\d{2}/\d{2}$",
     "occupation": "^[a-zA-Zа-яА-ЯёЁ\s-]+$",
-    "latitude": r'-?\d+\.\d+',
-    "blood_type": r'(?:AB|A|B|O)[-+−]',
-    "issn": "^\d{4}\-\d{4}$",
-    "uuid": r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
-    "date": r'\d{4}-\d{2}-\d{2}',
+    "latitude": "^(-?[1-8]?\d(?:\.\d{1,})?|90(?:\.0{1,})?)$",
+    "blood_type": "^(AB|A|B|O)[−+-]?$",
+    "issn": "^\d{4}-\d{4}$",
+    "uuid": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    "date": "^\d{4}-\d{2}-\d{2}$"
 }
 
 
@@ -34,12 +34,12 @@ def data_check(data: list) -> list:
     Проверяет валидность данных.
     :param data: Проверяемые данные.
     """
+    data.pop(0)
     invalid_lines = []
     for index, row in enumerate(data):
         for key, value in zip(PATTERNS.keys(), row):
             if not re.match(PATTERNS[key], value):
                 invalid_lines.append(index)
-    invalid_lines = list(set(invalid_lines))
     return invalid_lines
 
 
