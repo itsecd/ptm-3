@@ -18,6 +18,15 @@ PATTERNS = {
     "date": "^\d{4}-\d{2}-\d{2}$"
 }
 
+def longitude(longitude_tmp: str) -> bool:
+    """
+        Проверка долготы на корректность
+        :param longitude_tmp: str
+        :return: bool
+    """
+    value = float(longitude_tmp)
+    return -180 < value < 180
+
 
 def check_row(row: list) -> bool:
     """
@@ -28,6 +37,9 @@ def check_row(row: list) -> bool:
     for patterns, item in zip(PATTERNS.keys(), row):
         if not re.search(PATTERNS[patterns], item):
             return False
+        if patterns == 'longitude':
+            if longitude(item) == False:                                  
+                return False
     return True
 
 
