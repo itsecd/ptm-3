@@ -19,18 +19,6 @@ PATTERNS = {
     "date": "^\d{4}-\d{2}-\d{2}$"
 }
 
-row_example = [
-    "+7-(925)-245-54-22",
-    "1.23",
-    "12345678901",
-    "12-34/56",
-    "Математик",
-    "123.456",
-    "AB+",
-    "1234-5678",
-    "en-il",
-    "2023-11-22"
-]
 
 def check_row(row: list) -> bool:
     """
@@ -40,9 +28,41 @@ def check_row(row: list) -> bool:
     """
     for patterns, item in zip(PATTERNS.keys(), row):
         if not re.search(PATTERNS[patterns], item):
-            print(patterns, item)
             return False
     return True
 
-result = check_invalid_row(row_example)
-print(result) 
+
+def read_csv(file_name: str) -> list:
+    """
+        Считывает данные из файла csv и возвращает список строк
+        :param file_name: str
+        :return: list
+    """
+    data_rows = []
+    with open(file_name, "r", newline="", encoding="utf-16") as file:
+        reader = csv.reader(file, delimiter=";")
+        for elem in reader:
+            data_rows.append(elem)
+    data_rows.pop(0)
+    return data_rows
+
+
+def find_invalid_check(data: list) -> None:
+    """
+        Нахождение индексов неверных данных и вызов 
+        функций автоматической проверки результатов
+        :param data: list
+        :return: None
+    """
+    list_index = []
+    index = 0
+    for elem in data:
+        if not check_row(elem):
+            list_index.append(index)
+        index += 1
+    # print(list_index)
+    # print(len(list_index))
+    serialize_result(VARIANT, calculate_checksum(list_index))
+
+if __name__ == "__main__":
+    find_invalid_check(read_csv("60.csv"))
