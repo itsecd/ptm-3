@@ -19,7 +19,9 @@ PATTERNS = {
 
 def check_invalid_row(row: list) -> bool:
     """
-        Функция проверки каждой строки на валидность
+    Функция проверки каждой строки на валидность
+    :param row: list
+    :return: bool
     """
     flag = True
     for key, item in zip(PATTERNS.keys(), row):
@@ -31,7 +33,8 @@ def check_invalid_row(row: list) -> bool:
 
 def get_no_invalid_data_index(data: list) -> list:
     """
-        Функция находит невалидные строки и записывает их индексы
+    Функция находит невалидные строки и записывает их индексы
+    :return: list
     """
     data_index = []
     index = 0
