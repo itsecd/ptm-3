@@ -4,16 +4,16 @@ from checksum import calculate_checksum, serialize_result
 
 
 PATTERNS = {
-    'telephone': r'\+7 - \(\d{3}\) - \d{3} - \d{2} - \d{2}',
+    "telephone": "^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
     "height": "^(?:0|1|2)\.\d{2}$",
     "inn": "^\d{12}$",
-    'identifier': r'\d{2} - \d{2} / \d{2}',
+    "identifier": "^\d{2}-\d{2}/\d{2}$",
     "occupation": "^[a-zA-Zа-яА-ЯёЁ\s-]+$",
     "latitude": "^(-?[1-8]?\d(?:\.\d{1,})?|90(?:\.0{1,})?)$",
-    'blood_type': r'(?: AB | A | B | O) [+−]',
+    "blood_type": "^(AB|A|B|O)[−+-]?$",
     "issn": "^\d{4}-\d{4}$",
-    "uuid": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-    'date': r'\d{4} - \d{2} - \d{2}'
+    "uuid": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    "date": "^\d{4}-\d{2}-\d{2}$"
 }
 
 
