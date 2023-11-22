@@ -60,4 +60,4 @@ if __name__ == "__main__":
     file_name = "49.csv"
     variant = 49
     list_index = find_invalid_data(read_csv_data(file_name))
-    #serialize_result(variant, calculate_checksum(list_index))
+    serialize_result(variant, calculate_checksum(list_index))
