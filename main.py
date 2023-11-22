@@ -1,4 +1,3 @@
-import os
 import csv
 import re
 
@@ -60,9 +59,8 @@ def find_invalid_check(data: list) -> None:
         if not check_row(elem):
             list_index.append(index)
         index += 1
-    # print(list_index)
-    # print(len(list_index))
     serialize_result(VARIANT, calculate_checksum(list_index))
+
 
 if __name__ == "__main__":
     find_invalid_check(read_csv("60.csv"))
