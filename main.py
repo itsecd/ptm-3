@@ -85,3 +85,4 @@ if __name__ == "__main__":
     invalid_rows = validate_data(CSV_PATH, JSON_PATH)
     hash_sum = calculate_checksum(invalid_rows)
     serialize_result(9, hash_sum)
+    
