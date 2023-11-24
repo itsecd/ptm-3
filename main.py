@@ -1,21 +1,8 @@
-import csv
+import json
 import re
+import pandas as pd
 from checksum import calculate_checksum, serialize_result
-
-VARIANT = 54
-
-PATTERNS = {
-    "telephone": "^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
-    "http_status_message": "^\d{3} \s .+$",
-    "inn": "^\d{12}$",
-    "identifier": "^\d{2}-\d{2}/\d{2}$",
-    "ip_v4": "^\d{1,3} \. \d{1,3} \. \d{1,3} \. \d{1,3}$",
-    "latitude": "^(-?[1-8]?\d(?:\.\d{1,})?|90(?:\.0{1,})?)$",
-    "blood_type": "^(AB|A|B|O)[−+-]?$",
-    "isbn": "^\d{3}-\d{1}-\d{5}-\d{3}-\d{1}|\d{1}-\d{5}-\d{3}-\d{1}$",
-    "uuid": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-    "date": "^\d{4}-\d{2}-\d{2}$",
-}
+from typing import List, Callable
 
 
 def check_corect_latitude(latitude_tmp: str) -> bool:
@@ -26,6 +13,7 @@ def check_corect_latitude(latitude_tmp: str) -> bool:
     """
     value = float(latitude_tmp)
     return -90 < value < 90
+
 
 def check_correct_ip(ip: str) -> bool:
     """
@@ -40,55 +28,54 @@ def check_correct_ip(ip: str) -> bool:
     return True
 
 
-def check_invalid_row(row: list) -> bool:
+def check_correct_date(date: str) -> bool:
     """
-        Проверка строки на достоверность данных
-        :param row: list
-        :return: true or false
+    Функция проверяет корректность даты.
+    :param date: дата в формате yyyy-mm-dd.
+    :return: true or false
     """
-    for patterns, item in zip(PATTERNS.keys(), row):
-        if not re.search(PATTERNS[patterns], item):
-            return False
-        if patterns == 'latitude':
-            if not check_corect_latitude(item):
-                return False
-        if patterns == 'ip_v4':
-            if not check_correct_ip(item):
-                return False
-    return True
+    date = list(map(int, re.findall(r'\d+', date)))
+    return 0 < date[0] < 2025 and 0 < date[1] < 13 and 0 < date[2] < 32
 
 
-def find_invalid_data(data: list) -> list:
+def read_csv(file_name: str) -> pd.DataFrame:
     """
-        Поиск индексов недопустимых данных и вызов функции
-        для автоматической проверки контрольной суммы
-        :param data: list
-        :return: list
+        Считывает данные из файла csv
     """
-    list_index = []
-    index = 0
-    for elem in data:
-        if not check_invalid_row(elem):
-            list_index.append(index)
-        index += 1
-    return list_index
+    dataset = pd.read_csv(file_name, sep=';', quotechar='"', encoding='utf-16')
+    return dataset
 
 
-def read_csv(file_name: str) -> list:
+def find_invalid_entries(dataframe: list, column: str, pattern: str,
+                         is_correct: Callable[[str], bool] = lambda x: True) -> List[int]:
     """
-        Считывает данные из файла csv и возвращает список строк
-        :param file_name: string
-        :return: list
+        Функция находит все неподходящие заданному шаблону записи в некотором столбце датафрейма.
     """
-    data_rows = []
-    with open(file_name, "r", newline="", encoding="utf-16") as file:
-        reader = csv.reader(file, delimiter=";")
-        for elem in reader:
-            data_rows.append(elem)
-    data_rows.pop(0)
-    return data_rows
+    if not (column in dataframe.keys()):
+        return None
+    invalid_entries = []
+    for i in range(len(dataframe[column])):
+        if not re.fullmatch(pattern, dataframe[column][i], re.X) or not is_correct(dataframe[column][i]):
+            invalid_entries.append(i)
+    return invalid_entries
+
 
 if __name__ == "__main__":
+    VARIANT = 54
     data = read_csv("54.csv")
-    invalid_rows = find_invalid_data(data)
-    serialize_result(VARIANT, calculate_checksum(invalid_rows))
+    with open("regespx.json", 'r') as fp:
+        patterns = json.load(fp)
+    row_numbers = set()
+    row_numbers.update(find_invalid_entries(data, 'telephone', patterns['telephone']))
+    row_numbers.update(find_invalid_entries(data, 'http_status_message', patterns['http_status_message']))
+    row_numbers.update(find_invalid_entries(data, 'inn', patterns['inn']))
+    row_numbers.update(find_invalid_entries(data, 'identifier', patterns['identifier']))
+    row_numbers.update(find_invalid_entries(data, 'ip_v4', patterns['ip_v4'], check_correct_ip))
+    row_numbers.update(find_invalid_entries(data, 'latitude', patterns['latitude'], check_corect_latitude))
+    row_numbers.update(find_invalid_entries(data, 'blood_type', patterns['blood_type']))
+    row_numbers.update(find_invalid_entries(data, 'isbn', patterns['isbn']))
+    row_numbers.update(find_invalid_entries(data, 'uuid', patterns['uuid']))
+    row_numbers.update(find_invalid_entries(data, 'date', patterns['date'], check_correct_date))
+    checksum = calculate_checksum(list(row_numbers))
+    serialize_result(VARIANT, checksum)
+
