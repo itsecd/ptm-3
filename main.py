@@ -8,7 +8,7 @@ PATTERNS = {
     "snils": "\\d{11}",
     "identifier": "\\d{2} - \\d{2} / \\d{2}",
     "ip_v4": "\\d{1,3} \\. \\d{1,3} \\. \\d{1,3} \\. \\d{1,3}",
-    "longitude": "-? \\d{1,3} \\. \\d+",
+    "longitude": "-? (?: 180 \\. \\0+ | 1[0-7]?[0-9] \\. \\d+ | [0-9]?[0-9] \\. \\d+)",
     "blood_type": "(?: AB | A | B | O) [+|−]",
     "isbn": "\\d+ - \\d+ - \\d+ - \\d+ (?: -\\d+)?",
     "locale_code": "[a-z]{2} (-[a-z]{2})?",
@@ -28,6 +28,7 @@ def check_row(row: list) -> bool:
     i = 0
     for key in keys:
         if (not re.fullmatch(PATTERNS[key], row[i], re.X)):
+            print(row[i])
             return False  
         i +=1 
     return True    
