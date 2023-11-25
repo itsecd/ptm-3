@@ -1,5 +1,7 @@
 import json
 import hashlib
+import csv
+import re
 from typing import List
 
 """
@@ -38,4 +40,49 @@ def serialize_result(variant: int, checksum: str) -> None:
     :param variant: номер вашего варианта
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
-    pass
+    with open("result.json", "w") as f:
+        json.dump({"variant" : str(variant), "checksum": checksum}, f, indent=2)
+    
+    
+def check_string(string):
+    right_str = {
+    "telephone": re.compile(r"^\+7-\(9\d{2}\)-\d{3}-\d{2}-\d{2}$"),
+    "height": re.compile(r"(1|2)(\.\d{2})"),
+    "snils": re.compile(r"\d{11}"),
+    "identifier": re.compile(r"\d{2}-\d{2}/\d{2}"),
+    "occupation": re.compile(r"[А-ЯA-Z-][\w]*"),
+    "longitude": re.compile(r"-?\d{1,3}\.\d{0,6}"),
+    "blood_type": re.compile(r"(B|A|O|AB)(\+|\u2212)"),
+    "issn": re.compile(r"\d{4}-\d{4}"),
+    "locale_code": re.compile(r"([a-z]{2})(-[a-z]{2})?"),
+    "date": re.compile(r"20\d{2}-\d{2}-\d{2}")
+}
+
+    for title, value in string.items():
+        if not re.match(right_str[title], value):
+            print(f"{title}")
+            return True
+    return False
+
+    
+def get_wrong_indexes():
+    indexes = []
+    index = 1
+    with open("52.csv", 'r', encoding="utf-16") as f:
+        data = csv.reader(f, delimiter=";")
+        for row in data:
+            headers = row
+            break
+        for row in data:
+            if check_string(dict(zip(headers, row))):
+                indexes.append(index)
+                print(index)
+            index +=1
+    return indexes
+
+
+if __name__ == "__main__":
+    wrong_string_indexes = get_wrong_indexes()
+    print(len(wrong_string_indexes))
+    hash = calculate_checksum(wrong_string_indexes)
+    serialize_result(52, hash)
