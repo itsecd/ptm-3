@@ -43,40 +43,39 @@ def serialize_result(variant: int, checksum: str) -> None:
     with open("result.json", "w") as f:
         json.dump({"variant" : str(variant), "checksum": checksum}, f, indent=2)
     
-    
-def check_string(string):
-    right_str = {
+right_str = {
     "telephone": re.compile(r"^\+7-\(9\d{2}\)-\d{3}-\d{2}-\d{2}$"),
-    "height": re.compile(r"(1|2)(\.\d{2})"),
-    "snils": re.compile(r"\d{11}"),
+    "height": re.compile(r"^[1-2]\.\d{1,2}$"),
+    "snils": re.compile(r"^\d{11}$"),
     "identifier": re.compile(r"\d{2}-\d{2}/\d{2}"),
     "occupation": re.compile(r"[А-ЯA-Z-][\w]*"),
-    "longitude": re.compile(r"-?\d{1,3}\.\d{0,6}"),
+    "longitude": re.compile(r"^-?((1[0-7]\d)|([0-9]\d?)|180)(?:\.\d+)$"),
     "blood_type": re.compile(r"(B|A|O|AB)(\+|\u2212)"),
     "issn": re.compile(r"\d{4}-\d{4}"),
-    "locale_code": re.compile(r"([a-z]{2})(-[a-z]{2})?"),
-    "date": re.compile(r"20\d{2}-\d{2}-\d{2}")
+    "locale_code": re.compile(r"^[a-z]{2}(-[a-z]{2})?$"),
+    "date": re.compile(r"20\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])")
 }
-
+    
+def check_string(string):
+  
     for title, value in string.items():
         if not re.match(right_str[title], value):
-            print(f"{title}")
             return True
     return False
 
     
 def get_wrong_indexes():
     indexes = []
-    index = 1
+    index = 0
     with open("52.csv", 'r', encoding="utf-16") as f:
         data = csv.reader(f, delimiter=";")
         for row in data:
             headers = row
             break
         for row in data:
-            if check_string(dict(zip(headers, row))):
+            row_data = dict(zip(headers, row))
+            if check_string(row_data):
                 indexes.append(index)
-                print(index)
             index +=1
     return indexes
 
