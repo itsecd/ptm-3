@@ -44,11 +44,11 @@ def serialize_result(variant: int, checksum: str) -> None:
         json.dump({"variant" : str(variant), "checksum": checksum}, f, indent=2)
 
 def validation(str):
-    global longt
+    global k
     regex_str = {
-        "email": re.compile(r"(?!\.+)(?!.*\.\.)[-.\da-zA-Z_+]+@[-._\da-zA-Z]+\.[A-Za-z]+$", re.ASCII | re.IGNORECASE),
+        "email": re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"),
         "height": re.compile(r"^(1|2)\.\d{2}$"),
-        "snils": re.compile(r"^\d{11}$", re.ASCII),
+        "snils": re.compile(r"^\d{11}$"),
         "passport": re.compile(r"\d{2} \d{2} \d{6}", re.ASCII),
         "occupation": re.compile(r"[А-ЯA-Z-][\w]*"),
         "longitude": re.compile(r"^[-]?\d{1,3}\.\d{1,6}$"),
@@ -66,7 +66,7 @@ def validation(str):
 
 def indexes():
     indexes = []
-    index = 1
+    index = 0
     with open("51.csv", 'r', encoding="utf-16") as f:
         data = csv.reader(f, delimiter=";")
         for row in data:
@@ -82,6 +82,5 @@ def indexes():
 if __name__ == "__main__":
     neded_indexes = indexes()
     print('len: ',len(neded_indexes))
-    # print(longt)
     hash = calculate_checksum(neded_indexes)
     serialize_result(51, hash)
