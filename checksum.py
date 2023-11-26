@@ -1,3 +1,5 @@
+import csv
+import re
 import json
 import hashlib
 from typing import List
@@ -38,4 +40,48 @@ def serialize_result(variant: int, checksum: str) -> None:
     :param variant: номер вашего варианта
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
-    pass
+    with open("result.json", "w") as f:
+        json.dump({"variant" : str(variant), "checksum": checksum}, f, indent=2)
+
+def validation(str):
+    global longt
+    regex_str = {
+        "email": re.compile(r"(?!\.+)(?!.*\.\.)[-.\da-zA-Z_+]+@[-._\da-zA-Z]+\.[A-Za-z]+$", re.ASCII | re.IGNORECASE),
+        "height": re.compile(r"^(1|2)\.\d{2}$"),
+        "snils": re.compile(r"^\d{11}$", re.ASCII),
+        "passport": re.compile(r"\d{2} \d{2} \d{6}", re.ASCII),
+        "occupation": re.compile(r"[А-ЯA-Z-][\w]*"),
+        "longitude": re.compile(r"^[-]?\d{1,3}\.\d{1,6}$"),
+        "hex_color": re.compile(r"^#[a-f0-9]{6}$", re.IGNORECASE),
+        "issn": re.compile(r"\b\d{4}-[\dX]{4}"),
+        "locale_code": re.compile(r"^\w{2}(?:-\w{2})?$", re.IGNORECASE | re.ASCII),
+        "time": re.compile(r"\d{2}:\d{2}:\d{2}\.\d{6}", re.ASCII)
+    }
+
+    for title, value in str.items():
+        if not re.match(regex_str[title], value):
+            print(f"{title}")
+            return True
+    return False
+
+def indexes():
+    indexes = []
+    index = 1
+    with open("51.csv", 'r', encoding="utf-16") as f:
+        data = csv.reader(f, delimiter=";")
+        for row in data:
+            headers = row
+            break
+        for row in data:
+            if validation(dict(zip(headers, row))):
+                indexes.append(index)
+                print(index)
+            index +=1
+    return indexes
+
+if __name__ == "__main__":
+    neded_indexes = indexes()
+    print('len: ',len(neded_indexes))
+    # print(longt)
+    hash = calculate_checksum(neded_indexes)
+    serialize_result(51, hash)
