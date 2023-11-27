@@ -6,6 +6,12 @@ from checksum import calculate_checksum, serialize_result
 
 
 def read_csv(path_to_csv: str) -> list:
+    """Reads the file, creates a list of lines read from csv.
+    Args:
+        path_to_csv (str): Psth to file.
+    Returns:
+        list: List of lines read from csv.
+    """
     try:
         with open(path_to_csv, "r", encoding="utf16", newline="") as f:
             reader = csv.DictReader(f, delimiter=';')
@@ -22,6 +28,12 @@ def read_csv(path_to_csv: str) -> list:
 
 
 def read_json(path_to_json: str) -> dict:
+    """Reads and writes regular expressions to the dictionary.
+    Args:
+        path_to_json (str): Psth to file.
+    Returns:
+        dict: Regular expressions for each column from csv.
+    """
     try:
         with open(path_to_json, "r") as f:
             reader = json.load(f)
@@ -35,6 +47,12 @@ def read_json(path_to_json: str) -> dict:
 
 
 def check_rows(rows_list: list, regexp_dict: dict):
+    """Checks all csv strings for compliance with a regular expression, 
+    calls hash calculation functions from line numbers and writes the result to json.
+    Args:
+        rows_list (list): lines from csv.
+        regexp_dict (dict): regular expressions to check.
+    """
     number_invalid_rows = []
     for key, value in regexp_dict.items():
         for index, row in enumerate(rows_list):
