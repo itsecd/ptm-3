@@ -1,6 +1,8 @@
+import argparse
 import csv
 import json
 import re
+from checksum import calculate_checksum, serialize_result
 
 
 def read_csv(path_to_csv: str) -> list:
@@ -32,10 +34,24 @@ def read_json(path_to_json: str) -> dict:
     return reader
 
 
-def check_rows(rows_list: list, regexp_dict: dict) -> list:
+def check_rows(rows_list: list, regexp_dict: dict):
     number_invalid_rows = []
     for key, value in regexp_dict.items():
         for index, row in enumerate(rows_list):
             if not re.match(value, row[key]):
                 number_invalid_rows.append(index)
-    return number_invalid_rows    
+    hash = calculate_checksum(number_invalid_rows) 
+    serialize_result(17, hash)           
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-directory_csv', type=str)
+    parser.add_argument('-directory_json', type=str)
+    try:
+        args = parser.parse_args()
+        rows_csv = read_csv(args.directory_csv)
+        regexp = read_json(args.directory_json)
+        check_rows(rows_csv, regexp) 
+    except Exception as err:
+        print(err)

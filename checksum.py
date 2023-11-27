@@ -38,4 +38,13 @@ def serialize_result(variant: int, checksum: str) -> None:
     :param variant: номер вашего варианта
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
-    pass
+    params = {"variant": str(variant), "checksum": checksum}
+    try: 
+        with open("result.json", "w") as f:
+            json.dump(params, f)
+    except IsADirectoryError as err:
+        print(err)            
+    except FileNotFoundError as err:
+        print(err)
+    except Exception as err:
+        print(err)         
