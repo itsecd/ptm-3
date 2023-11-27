@@ -1,3 +1,4 @@
+import csv
 import json
 import hashlib
 import re
@@ -95,5 +96,27 @@ def match_data(research_data :list, names :list) -> tuple:
                 valid_data[names[i]].append(row[i])
         k += 1
     return count_not_valid_data, valid_data
+
+def read_csv(file_name: str) -> tuple:
+    research_data = []
+    names = []
+    with open(file_name, 'r', encoding="UTF16") as csvfile:
+        read_data = csv.reader(csvfile, delimiter=';')
+        count = 0
+        for row in read_data:
+            if count != 0:
+                research_data.append(row)
+            else:
+                names = row
+            count += 1
+            
+    return research_data, names
+
+def write_to_csv(data_to_csv: list, names: list, file_name: str) -> None:
+    with open(file_name, 'w', encoding='UTF16') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(names)
+        for i in range(9900):
+            writer.writerow(data_to_csv[i])
             
             
