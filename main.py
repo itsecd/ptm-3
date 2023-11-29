@@ -26,3 +26,21 @@ def read_csv(path: str) -> list:
     except Exception as err:
         print(f"Error reading of file:{err}")
     return data
+
+
+def read_exps(path: str) -> dict:
+    """ Reads a json file with regulars and writes it to the dictionary.
+
+    Arguments:
+        path(str): path to the controls
+
+    Return value:
+        dict: regular expressions read into the dictionary
+    """
+    data = {}
+    try:
+        with open(path, "r") as file:
+            data = json.load(file)
+    except Exception as err:
+        print(f"Error reading of file:{err}")
+    return data
