@@ -84,4 +84,4 @@ def validate_data(path_csv: str, path_json: str) -> list:
 if __name__ == "__main__":
     invalid_rows = validate_data(CSV_PATH, REG_JSON_PATH)
     hash_sum = calculate_checksum(invalid_rows)
-    serialize_result(9, hash_sum)
+    serialize_result(29, hash_sum)
