@@ -44,7 +44,6 @@ def serialize_result(variant: int, checksum: str) -> None:
         json.dump({"variant" : str(variant), "checksum": checksum}, f, indent=2)
 
 def validation(str):
-    global k
     regex_str = {
         "email": re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"),
         "height": re.compile(r"^(1|2)\.\d{2}$"),
@@ -60,14 +59,13 @@ def validation(str):
 
     for title, value in str.items():
         if not re.match(regex_str[title], value):
-            print(f"{title}")
             return True
     return False
 
-def indexes():
+def indexes(filename):
     indexes = []
     index = 0
-    with open("51.csv", 'r', encoding="utf-16") as f:
+    with open(filename, 'r', encoding="utf-16") as f:
         data = csv.reader(f, delimiter=";")
         for row in data:
             headers = row
@@ -75,12 +73,11 @@ def indexes():
         for row in data:
             if validation(dict(zip(headers, row))):
                 indexes.append(index)
-                print(index)
             index +=1
     return indexes
 
 if __name__ == "__main__":
-    neded_indexes = indexes()
-    print('len: ',len(neded_indexes))
+    filename = "51.csv"
+    neded_indexes = indexes(filename)
     hash = calculate_checksum(neded_indexes)
     serialize_result(51, hash)
