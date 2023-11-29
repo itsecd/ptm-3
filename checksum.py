@@ -3,6 +3,7 @@ import re
 import json
 import hashlib
 from typing import List
+import logging
 
 """
 В этом модуле обитают функции, необходимые для автоматизированной проверки результатов ваших трудов.
@@ -59,6 +60,7 @@ def validation(str):
 
     for title, value in str.items():
         if not re.match(regex_str[title], value):
+            logging.info(title)
             return True
     return False
 
@@ -73,11 +75,15 @@ def indexes(filename):
         for row in data:
             if validation(dict(zip(headers, row))):
                 indexes.append(index)
+                logging.info(index)
             index +=1
     return indexes
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
     filename = "51.csv"
-    neded_indexes = indexes(filename)
-    hash = calculate_checksum(neded_indexes)
+    needed_indexes = indexes(filename)
+    len = len(needed_indexes)
+    logging.info(f'len: {len}')
+    hash = calculate_checksum(needed_indexes)
     serialize_result(51, hash)
