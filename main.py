@@ -60,3 +60,28 @@ def chek_row(row: list, exps: dict) -> bool:
         if not re.match(exps[key], value):
             return False
     return True
+
+
+def validate_data(path_csv: str, path_json: str) -> list:
+    """ Records line numbers that do not match regular expressions.
+
+    Arguments:
+        path_csv(str): path to dataset
+        path_json(str): path to the controls
+
+    Return value:
+        list: a list with invalid line numbers
+    """
+    rows_numbers = []
+    data = read_csv(path_csv)
+    regexps = read_exps(path_json)
+    for i in range(len(data)):
+        if not chek_row(data[i], regexps):
+            rows_numbers.append(i)
+    return rows_numbers
+
+
+if __name__ == "__main__":
+    invalid_rows = validate_data(CSV_PATH, JSON_PATH)
+    hash_sum = calculate_checksum(invalid_rows)
+    serialize_result(9, hash_sum)
