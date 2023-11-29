@@ -1,69 +1,63 @@
 import csv
 import re
-from typing import List
-from checksum import calculate_checksum, serialize_result
+import checksum
 
 
-REGEX_PATTERNS: dict[str, str] = {
-    "telephone": r"^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
-    "http_status_message": r"^\d{3}\s[a-zA-Z0-9_ ]{1,}",
-    "inn": r"^\d{12}$",
-    "identifier": r"^\d{2}-\d{2}/\d{2}$",
-    "ip_v4": r"^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\."
-             r"(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\."
-             r"(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\."
-             r"(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
-    "latitude": r"^(-?[1-8]?\d(?:\.\d+)?|90(?:\.0+)?)$",
-    "blood_type": r"^(AB|A|B|O)[−+-]?$",
-    "isbn": r"^\d+-\d+-\d+-\d+(:?-\d+)?$",
-    "uuid": r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-    "date": r"^\d{4}-\d{2}-\d{2}$"
-}
-
-VARIANT: int = 41
-CSV_FILE_PATH: str = "41.csv"
-CSV_ENCODING: str = "utf-16le"
-
-
-def is_row_valid(row: List[str]) -> bool:
+def read_file(filename: str) -> list:
     """
-    Determine if a row from the CSV file is valid.
-
-    A row is considered valid if all its fields match the corresponding regex patterns defined in REGEX_PATTERNS.
-
-    :param row: A list of strings, where each string is a field in the CSV row.
-
-    :return bool: True if the row is valid, False otherwise.
+    read file and send every string to check on valid regualr
+    filename - name of our variant
+    return list_for_checksum - list of indexstring where regular not matched
     """
-    return all(re.search(REGEX_PATTERNS[field], value) for field, value in zip(REGEX_PATTERNS, row))
+    first_string = True
+    title = ""
+    list_for_checksum = []
+    index = 0
+    with open(filename, "r", encoding="utf-16") as file_it:
+        data = csv.reader(file_it, delimiter=";")
+        for string in data:
+            if first_string:  # catch title string
+                first_string = False
+                title = string
+            else:
+                tmp_dict = dict(zip(title, string))  # dict for check string
+                if check(tmp_dict):
+                    list_for_checksum.append(index)
+                index += 1
+    return list_for_checksum
 
 
-def get_invalid_row_indices(data: List[List[str]]) -> List[int]:
+def check(string_dict: dict) -> bool:
     """
-    Identify all invalid rows within the dataset based on the regex patterns.
-
-    :param data: The dataset read from the CSV file, where each inner list represents a row.
-
-    :return List: A list of indices that correspond to the invalid rows in the dataset.
+    string_dict - dict in which key is title and value is current word of string
+    return True if value is not matched with regular
     """
-    return [index for index, row in enumerate(data) if not is_row_valid(row)]
+    valid = {
+        "email": re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"),
+        "http_status_message": re.compile(
+            r"(([1-9])|([1-9][0-9])|([1-9][0-9][0-9]))\s[A-Za-z ]"
+            ),
+        "snils": re.compile(r"^[0-9]{11}$"),
+        "passport": re.compile(r"([0-9]{2}\s){2}[0-9]{6}"),
+        "ip_v4": re.compile(
+            r"^((25[0-5]|2[0-4]\d|1\d\d|\d?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|\d?\d)$"
+        ),
+        "longitude": re.compile(r"^-?((1[0-7]\d|\d?\d)(?:\.\d{1,})?|180(\.0{1,})?)$"),
+        "hex_color": re.compile(r"\#[0-9a-fA-F]{6}$"),
+        "isbn": re.compile(
+            r"[0-9]{3}-[0-9]{1}-[0-9]{5}-[0-9]{3}-[0-9]{1}|[0-9]{1}-[0-9]{5}-[0-9]{3}-[0-9]{1}"
+        ),
+        "locale_code": re.compile(r"[a-z]{2}(-([a-z]){2})?$"),
+        "time": re.compile(r"([0-1][0-9]|2[0-3])\:[0-5][\d]\:[0-5][\d]\.[\d]{6}"),
+    }
 
-
-def main() -> None:
-    """
-    This function opens the CSV file, reads its contents excluding the header, validates each row with the defined
-    regex patterns, calculates the checksum of invalid row indices, and then serializes the checksum result using the
-    serialize_result function.
-    """
-    with open(CSV_FILE_PATH, "r", newline="", encoding=CSV_ENCODING) as file:
-        reader = csv.reader(file, delimiter=";")
-        data: List[List[str]] = list(reader)[1:]
-
-    invalid_indices: List[int] = get_invalid_row_indices(data)
-    checksum_value: str = calculate_checksum(invalid_indices)
-
-    serialize_result(VARIANT, checksum_value)
+    for title, value in string_dict.items():
+        if re.match(valid[title], value) == None:
+            return True  # if we found a  not validation value
+    return False
 
 
 if __name__ == "__main__":
-    main()
+    list_of_index_no_valid_strings = read_file("41.csv")
+    hash = checksum.calculate_checksum(list_of_index_no_valid_strings)
+    checksum.serialize_result(41, hash)
