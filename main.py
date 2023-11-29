@@ -44,3 +44,19 @@ def read_exps(path: str) -> dict:
     except Exception as err:
         print(f"Error reading of file:{err}")
     return data
+
+
+def chek_row(row: list, exps: dict) -> bool:
+    """ Checks whether a data string matches a regular expression.
+
+    Arguments:
+        row(list): a string from the dataset
+        exps(dict): dictionary of regulars
+
+    Return value:
+        bool: True if the string matches the expression. False - otherwise
+    """
+    for key, value in zip(exps.keys(), row):
+        if not re.match(exps[key], value):
+            return False
+    return True
