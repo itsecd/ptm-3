@@ -1,8 +1,7 @@
 import re
 import csv
-import pandas as pd
 import checksum 
-import os
+
  
 PATTERNS = {
     "email": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", # Done
@@ -58,4 +57,6 @@ def get_no_invalid_data_index(data: list) -> list:
 if __name__ == "__main__":
     data= read_csv()
     invalid_data = get_no_invalid_data_index(data)
-    print(sum(invalid_data))
+    hash = checksum.calculate_checksum(invalid_data)
+
+    checksum.serialize_result(3, hash)
