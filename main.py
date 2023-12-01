@@ -21,7 +21,6 @@ def read_file(filename: str) -> dict:
     keys = list(dict_of_data.keys())
     for col in range(10):
         with open(filename, "r", encoding="utf-16") as file:
-            first_it = True
             reader = csv.reader(file, delimiter=';')
             for row in reader:
                 dict_of_data[keys[col]].append(row[col])
@@ -48,13 +47,13 @@ def check(dict_data: dict) -> list:
     list_no_valid_value = []
     for key in dict_data.keys():
         for i in dict_data[key]:
-
-            if re.match(valid[key], i) is None:
+            if re.match(valid[key], i) == None:
                 list_no_valid_value.append(dict_data[key].index(i))
-        #так очень удобно смотреть результат
-        #print(key, list_no_valid_value)
-        #print(len(list_no_valid_value))
-        #list_no_valid_value.clear()
+        # так очень удобно смотреть результат
+        list_no_valid_value.sort()
+        print(key, list_no_valid_value)
+        print(len(list_no_valid_value))
+        list_no_valid_value.clear()
 
     return list_no_valid_value
 
@@ -62,6 +61,9 @@ def check(dict_data: dict) -> list:
 if __name__ == "__main__":
     dict_data = read_file("20.csv")
     list_no_valid_val = check(dict_data)
+
+    print(list_no_valid_val)
+    #print(type(list_no_valid_val[0]))
     my_hash = checksum.calculate_checksum(list_no_valid_val)
     print(my_hash)
     checksum.serialize_result(20, my_hash)
