@@ -26,6 +26,7 @@ def calculate_checksum(row_numbers: List[int]) -> str:
     return hashlib.md5(json.dumps(row_numbers).encode('utf-8')).hexdigest()
 
 
+
 def serialize_result(variant: int, checksum: str) -> None:
     """
     Метод для сериализации результатов лабораторной пишите сами.
@@ -39,3 +40,6 @@ def serialize_result(variant: int, checksum: str) -> None:
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
     pass
+    result = {'VARIANT': str(variant), 'CHECK_SUM': checksum}
+    with open('result.json', 'w') as fp:
+        json.dump(result, fp, indent=2)
