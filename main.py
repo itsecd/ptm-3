@@ -51,9 +51,10 @@ def check(dict_data: dict) -> list:
 
             if re.match(valid[key], i) is None:
                 list_no_valid_value.append(dict_data[key].index(i))
-        print(key, list_no_valid_value)
-        print(len(list_no_valid_value))
-        list_no_valid_value.clear()
+        #так очень удобно смотреть результат
+        #print(key, list_no_valid_value)
+        #print(len(list_no_valid_value))
+        #list_no_valid_value.clear()
 
     return list_no_valid_value
 
@@ -61,3 +62,6 @@ def check(dict_data: dict) -> list:
 if __name__ == "__main__":
     dict_data = read_file("20.csv")
     list_no_valid_val = check(dict_data)
+    my_hash = checksum.calculate_checksum(list_no_valid_val)
+    print(my_hash)
+    checksum.serialize_result(20, my_hash)
