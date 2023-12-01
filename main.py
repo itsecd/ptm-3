@@ -30,10 +30,34 @@ def read_file(filename: str) -> dict:
     return dict_of_data
 
 
-def check(dict_data: dict) -> bool:
+def check(dict_data: dict) -> list:
     """Передаем прочитанные данные, возвращаем список из индексов невалидных значений"""
+    valid = {
+        'telephone': re.compile(r"\+7\-\(\d\d\d\)\-\d\d\d\-\d\d\-\d\d"),
+        "height": re.compile(r"[1-2]\.[0-9]{2}$"),
+        "snils": re.compile(r"^[0-9]{11}$"),
+        "identifier": re.compile(r"[0-9]{2}\-[0-9]{2}\/[0-9]{2}$"),
+        "occupation": re.compile(r"^[a-zA-Zа-яА-ЯёЁ\s-]+$"),
+        "longitude": re.compile(r"^-?((1[0-7]\d|\d?\d)(?:\.\d{1,})?|180(\.0{1,})?)$"),
+        "blood_type": re.compile(r"^(?:AB|A|B|O)(?:[\−|\+])$"),
+        "issn": re.compile(r"^[0-9]{4}\-[0-9]{4}$"),
+        "locale_code": re.compile(r"^([a-z]{2,3})(?:-([a-zA-Z]{2,4}))?(?:-([a-zA-Z0-9-]+))?$"),
+        "date": re.compile(r"^[0-9]{4}\-[0-9]{2}\-[0-9]{2}")
+    }
+
+    list_no_valid_value = []
+    for key in dict_data.keys():
+        for i in dict_data[key]:
+
+            if re.match(valid[key], i) is None:
+                list_no_valid_value.append(dict_data[key].index(i))
+        print(key, list_no_valid_value)
+        print(len(list_no_valid_value))
+        list_no_valid_value.clear()
+
+    return list_no_valid_value
 
 
 if __name__ == "__main__":
     dict_data = read_file("20.csv")
-    list_no_valid_value = check(dict_data)
+    list_no_valid_val = check(dict_data)
