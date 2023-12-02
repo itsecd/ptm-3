@@ -19,6 +19,19 @@ REGEX_PATTERNS = {
     "time": "^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)\.(\d{1,6})$"
 }
 
+def check_ip(ip: str) -> bool:
+    """
+    A function that checks the range of numbers in ip_v4
+
+    :param ip: the IP address that needs to be checked
+    :return: True if the IP address has passed validation, False otherwise
+    """
+    ip_numbers = list(map(int, re.findall(r'\d{1,3}', ip)))   
+    for ip_number in ip_numbers:
+        if ip_number > 255:
+            return False
+    return True
+
 def check_valid_row(row: list) -> bool:
     '''
     A function that checks the string for validity
@@ -29,6 +42,9 @@ def check_valid_row(row: list) -> bool:
     for key, value in zip(REGEX_PATTERNS.keys(), row):
         if not re.match(REGEX_PATTERNS[key], value):
             return False
+        if key == 'ip_v4':
+            if check_ip(value) == False:                                                       
+                return False
     return True
 
 
