@@ -23,10 +23,10 @@ def calculate_checksum(row_numbers: List[int]) -> str:
     :return: md5 хеш для проверки через github action
     """
     row_numbers.sort()
-    return hashlib.md5(json.dumps(row_numbers).encode('utf-8')).hexdigest()
+    return hashlib.md5(json.dumps(row_numbers).encode("utf-8")).hexdigest()
 
 
-def serialize_result(variant: int, checksum: str) -> None:
+def serialize_result(var: int, checksum: str) -> None:
     """
     Метод для сериализации результатов лабораторной пишите сами.
     Вам нужно заполнить данными - номером варианта и контрольной суммой - файл, лежащий в корне репозитория.
@@ -38,4 +38,6 @@ def serialize_result(variant: int, checksum: str) -> None:
     :param variant: номер вашего варианта
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
-    pass
+    result = {"variant": str(var), "checksum": checksum}
+    with open("result.json", "w") as fp:
+        json.dump(result, fp, indent=34)

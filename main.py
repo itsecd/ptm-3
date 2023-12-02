@@ -4,6 +4,7 @@ import pandas as pd
 from checksum import calculate_checksum, serialize_result
 from check_func import check_longitude, check_ip, check_date
 
+
 PATTERNS = {
     "telephone": "^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
     "http_status_message": "^\d{3}\s[a-zA-Z0-9_ ]{1,}",
