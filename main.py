@@ -11,26 +11,13 @@ REGEX_PATTERNS = {
     "http_status_message": "^\d{3}\s[a-zA-Z0-9_ ]{1,}",
     "inn": "^\d{12}$",
     "passport": "^\d{2} \d{2} \d{6}$",
-    "ip_v4": "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",
+    "ip_v4": "^'((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])",
     "latitude": "^(-?[1-8]?\d(?:\.\d{1,})?|90(?:\.0{1,})?)$",
     "hex_color": "^#[0-9a-fA-F]{6}$",
     "isbn": "^\d+-\d+-\d+-\d+(:?-\d+)?$",
     "uuid": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
     "time": "^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)\.(\d{1,6})$"
 }
-
-def check_ip(ip: str) -> bool:
-    """
-    A function that checks the range of numbers in ip_v4
-
-    :param ip: the IP address that needs to be checked
-    :return: True if the IP address has passed validation, False otherwise
-    """
-    ip_numbers = list(map(int, re.findall(r'\d{1,3}', ip)))   
-    for ip_number in ip_numbers:
-        if ip_number > 255:
-            return False
-    return True
 
 def check_valid_row(row: list) -> bool:
     '''
@@ -42,9 +29,6 @@ def check_valid_row(row: list) -> bool:
     for key, value in zip(REGEX_PATTERNS.keys(), row):
         if not re.match(REGEX_PATTERNS[key], value):
             return False
-        if key == 'ip_v4':
-            if check_ip(value) == False:                                                       
-                return False
     return True
 
 
