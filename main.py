@@ -1,7 +1,7 @@
 import csv
 import re
 import checksum
-
+import logging
 
 def read_file(filename: str) -> dict:
     """
@@ -25,7 +25,7 @@ def read_file(filename: str) -> dict:
             for row in reader:
                 dict_of_data[keys[col]].append(row[col])
             dict_of_data[keys[col]].pop(0)
-            print(len(dict_of_data[keys[col]]))
+            logger.debug("%d values are read in the column %s", len(dict_of_data[keys[col]]), keys[col])
     return dict_of_data
 
 
@@ -53,6 +53,9 @@ def check(dict_data: dict) -> list:
 
 
 if __name__ == "__main__":
+    logger = logging.getLogger("df")
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+    logger.setLevel(logging.DEBUG)
     dict_data = read_file("20.csv")
     list_no_valid_val = check(dict_data)
     my_hash = checksum.calculate_checksum(list_no_valid_val)
