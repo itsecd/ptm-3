@@ -3,6 +3,20 @@ import re
 import checksum
 import logging
 
+valid = {
+    'telephone': re.compile(r"\+7\-\(\d\d\d\)\-\d\d\d\-\d\d\-\d\d"),
+    "height": re.compile(r"[1-2]\.[0-9]{2}$"),
+    "snils": re.compile(r"^[0-9]{11}$"),
+    "identifier": re.compile(r"[0-9]{2}\-[0-9]{2}\/[0-9]{2}$"),
+    "occupation": re.compile(r"^[a-zA-Zа-яА-ЯёЁ\s-]+$"),
+    "longitude": re.compile(r"^-?((1[0-7]\d|\d?\d)(?:\.\d{1,})?|180(\.0{1,})?)$"),
+    "blood_type": re.compile(r"^(?:AB|A|B|O)(?:[\−|\+])$"),
+    "issn": re.compile(r"^[0-9]{4}\-[0-9]{4}$"),
+    "locale_code": re.compile(r"^([a-z]{2,3})(?:-([a-zA-Z]{2,4}))?(?:-([a-zA-Z0-9-]+))?$"),
+    "date": re.compile(r"^[0-9]{4}\-[0-9]{2}\-[0-9]{2}")
+}
+
+
 def read_file(filename: str) -> dict:
     """
     Читаем файл, записываем каждый столбец в словарь, где ключ это заголовок, значения это массив значений
@@ -31,18 +45,6 @@ def read_file(filename: str) -> dict:
 
 def check(dict_data: dict) -> list:
     """Передаем прочитанные данные, возвращаем список из индексов невалидных значений"""
-    valid = {
-        'telephone': re.compile(r"\+7\-\(\d\d\d\)\-\d\d\d\-\d\d\-\d\d"),
-        "height": re.compile(r"[1-2]\.[0-9]{2}$"),
-        "snils": re.compile(r"^[0-9]{11}$"),
-        "identifier": re.compile(r"[0-9]{2}\-[0-9]{2}\/[0-9]{2}$"),
-        "occupation": re.compile(r"^[a-zA-Zа-яА-ЯёЁ\s-]+$"),
-        "longitude": re.compile(r"^-?((1[0-7]\d|\d?\d)(?:\.\d{1,})?|180(\.0{1,})?)$"),
-        "blood_type": re.compile(r"^(?:AB|A|B|O)(?:[\−|\+])$"),
-        "issn": re.compile(r"^[0-9]{4}\-[0-9]{4}$"),
-        "locale_code": re.compile(r"^([a-z]{2,3})(?:-([a-zA-Z]{2,4}))?(?:-([a-zA-Z0-9-]+))?$"),
-        "date": re.compile(r"^[0-9]{4}\-[0-9]{2}\-[0-9]{2}")
-    }
 
     list_no_valid_value = []
     for key in dict_data.keys():
