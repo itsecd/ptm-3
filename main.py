@@ -53,7 +53,7 @@ def check(dict_data: dict) -> list:
 
 
 if __name__ == "__main__":
-    logger = logging.getLogger("df")
+    logger = logging.getLogger("logger")
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
     logger.setLevel(logging.DEBUG)
     dict_data = read_file("20.csv")
