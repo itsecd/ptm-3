@@ -6,7 +6,7 @@ from checksum import serialize_result, calculate_checksum
 
 PATTERNS = {
     "email": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
-    "height": "^[1-3]\\.\\d{2}$",
+    "height": "^[1-2]\\.\\d{2}$",
     "snils": "^\\d{11}$",
     "passport": "^\\d{2}\\s\\d{2}\\s\\d{6}$",
     "occupation": "^[a-zA-Zа-яА-ЯёЁ\\s-]+$",
