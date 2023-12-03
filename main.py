@@ -20,8 +20,11 @@ PATTERNS = {
 }
 
 def read_csv(path: str) -> list:
+    '''
+        Функция чтения csv файла
+    '''
     data = []
-    with open("6.csv", "r", newline="", encoding="utf-16") as file:
+    with open(path, "r", newline="", encoding="utf-16") as file:
         read_data = csv.reader(file, delimiter=";")
         for row in read_data:
             data.append(row)
