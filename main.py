@@ -30,8 +30,18 @@ def check_column(dataset: pd.DataFrame, column: str, pattern: str, check_correct
     '''
     result = []
     for i in range(len(dataset[column])):
-        if not re.fullmatch(pattern, dataset[column][i], re.X) or not check_correct(dataset[column][i]):
-            result.append(i)
+        if column == "hex_color":
+            if not re.match(pattern, dataset[column][i]):
+                result.append(i)
+        elif column == "passport":
+            if not re.match(pattern, dataset[column][i]):
+                result.append(i)
+        elif column == "time":
+            if not re.match(pattern, dataset[column][i]):
+                result.append(i)
+        else:
+            if not re.fullmatch(pattern, dataset[column][i], re.X) or not check_correct(dataset[column][i]):
+                result.append(i)
     print(f"In '{column}' find {len(result)} incorrect cells")
     return result
 
