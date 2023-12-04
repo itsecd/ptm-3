@@ -49,4 +49,3 @@ if __name__ == "__main__":
     data = read_file()
     summ = checksum.calculate_checksum(get_index_invalid_data(data))
     checksum.serialize_result(VAR, summ)
-    print("OM")
