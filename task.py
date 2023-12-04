@@ -1,5 +1,6 @@
 import csv 
 import re 
+import checksum
 
 VAR=33
 PATTERNS ={
@@ -46,6 +47,6 @@ def get_index_invalid_data(data):
 
 if __name__ == "__main__":
     data = read_file()
-    counter = get_index_invalid_data(data)
-    print(len(counter))
-    print("O")
+    summ = checksum.calculate_checksum(get_index_invalid_data(data))
+    checksum.serialize_result(VAR, summ)
+    print("OM")
