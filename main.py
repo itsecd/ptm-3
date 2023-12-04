@@ -25,7 +25,6 @@ def get_data(path: str) -> list:
 
 def is_valid(example, value: str):
     "check example with regular expression via re-module"
- 
     if re.match(PATTERNS[value], example):
         return True     
     else:
@@ -36,8 +35,12 @@ def is_valid(example, value: str):
 def get_non_valid_index(df: pd.DataFrame) -> list:
     "via pandas dataframe interate thought row and check each value"
     res = []
-    for i in df.index:
-        for j in df.columns.values.tolist():
+    # for i in df.index:
+    for i in range(10):
+        # for j in df.columns.values.tolist():
+        for j in ["isbn","uuid","date"]:
+            print(j, df[j][i], PATTERNS[j])
+
             if not is_valid(df[j][i], j):
                 res.append(i)
                 # print(i)
@@ -53,5 +56,5 @@ if __name__ == "__main__":
 
 
     
-    serialize_result(MY_INDEX, calculate_checksum(
-        get_non_valid_index(get_data(path))))
+    # serialize_result(MY_INDEX, calculate_checksum(
+    #     get_non_valid_index(get_data(path))))
