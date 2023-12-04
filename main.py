@@ -6,7 +6,7 @@ from checksum import calculate_checksum, serialize_result
 
 PATTERNS = {
     "telephone": "^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
-    "http_status_message": "^\d{3}\s[a-zA-Z0-9_ ]{1,}",
+    "http_status_message": "^\d{3}\s[a-zA-Z0-9_ ]{1,}$",
     "inn": "^\d{12}$",
     "identifier": "^\d{2}-\d{2}/\d{2}$",
     "ip_v4": "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",
