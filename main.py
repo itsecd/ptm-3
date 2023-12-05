@@ -26,7 +26,29 @@ def read_csv(file_name) -> list:
         data.pop(0)
         return data
 
+def check_invalid_row(row: list) -> bool:
+    '''
+        Функция проверки каждой строки на валидность
+    '''
+    for key, value in zip(PATTERN.keys(), row):
+        if not re.search(PATTERN[key], value):
+            return False
+    return True
+
+def get_invalid_indexs(data: list) -> list:
+    '''
+        Функция находит невалидные строки и записывает их индексы 
+    '''
+    indexs = []
+    index = 0
+    for row in data:
+        if not check_invalid_row(row):
+            indexs.append(index)
+        index += 1
+    return indexs
+
 if __name__ == "__main__":
     variant = 42
     file_name = "42.csv"
-    read_csv(file_name)
+    data = read_csv(file_name)
+    invalid_indexs = get_invalid_indexs(data)
