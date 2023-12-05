@@ -40,4 +40,4 @@ def serialize_result(variant: int, checksum: str) -> None:
     """
     result = {"variant": str(variant), "checksum": checksum}
     with open("result.json", "w") as f:
-        json.dump(result, f, indent=42)
+        json.dump(result, f, indent=2)
