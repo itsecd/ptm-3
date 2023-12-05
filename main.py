@@ -33,7 +33,7 @@ def check_invalid_row(row: list) -> bool:
        Проверяем каждую строку на валидность
     '''
     for key, value in zip(PATTERN.keys(), row):
-        if not re.search(PATTERN[key], value):
+        if not re.search(PATTERN[key], value, re.X):
             return False
     return True
 
