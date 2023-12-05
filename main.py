@@ -56,4 +56,5 @@ if __name__ == "__main__":
     invalid_indexs = get_invalid_indexs(data)
     print(len(invalid_indexs))
     print(calculate_checksum(invalid_indexs))
+    serialize_result(variant, calculate_checksum(list(invalid_indexs)))
 
