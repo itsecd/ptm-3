@@ -17,7 +17,9 @@ PATTERN = {
 
 
 def read_csv(file_name) -> list:
-    '''Читаем csv-файл и записываем его в список'''
+    '''
+    Читаем csv-файл и записываем его в список
+    '''
     data = []
     with open(file_name, "r", newline="", encoding="utf-16") as file:
         reader = csv.reader(file, delimiter=";")
@@ -28,7 +30,7 @@ def read_csv(file_name) -> list:
 
 def check_invalid_row(row: list) -> bool:
     '''
-        Функция проверки каждой строки на валидность
+       Проверяем каждую строку на валидность
     '''
     for key, value in zip(PATTERN.keys(), row):
         if not re.search(PATTERN[key], value):
@@ -37,7 +39,7 @@ def check_invalid_row(row: list) -> bool:
 
 def get_invalid_indexs(data: list) -> list:
     '''
-        Функция находит невалидные строки и записывает их индексы 
+        Находим невалидные строки и записываем их индексы 
     '''
     indexs = []
     index = 0
@@ -52,3 +54,6 @@ if __name__ == "__main__":
     file_name = "42.csv"
     data = read_csv(file_name)
     invalid_indexs = get_invalid_indexs(data)
+    print(len(invalid_indexs))
+    print(calculate_checksum(invalid_indexs))
+
