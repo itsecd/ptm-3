@@ -15,6 +15,15 @@ PATTERN = {
     "date": r"^\d{4}-\d{2}-\d{2}$"
 }
 
+def check_invalid_row(row: list) -> bool:
+    '''
+        Функция проверки каждой строки на валидность
+    '''
+    for key, value in zip(PATTERN.keys(), row):
+        if not re.search(PATTERN[key], value):
+            return False
+    return True
+
 
 def read_csv(file_name) -> list:
     '''Читаем csv-файл и записываем его в список'''
@@ -26,7 +35,21 @@ def read_csv(file_name) -> list:
         data.pop(0)
         return data
 
+def get_no_invalid_data_index(data: list) -> list:
+    '''
+        Функция находит невалидные строки и записывает их индексы 
+    '''
+    data_index = []
+    index = 0
+    for row in data:
+        if not check_invalid_row(row):
+            data_index.append(index)
+        index += 1
+    return data_index
+
 if __name__ == "__main__":
     variant = 42
     file_name = "42.csv"
-    read_csv(file_name)
+    data = read_csv(file_name)
+    serialize_result(variant, calculate_checksum(
+        get_no_invalid_data_index(data)))
