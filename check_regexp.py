@@ -1,8 +1,12 @@
 import argparse
 import csv
 import json
+import logging
 import re
 from checksum import calculate_checksum, serialize_result
+
+logger = logging.getLogger()
+logger.setLevel('INFO')
 
 
 def read_csv(path_to_csv: str) -> list:
@@ -19,11 +23,11 @@ def read_csv(path_to_csv: str) -> list:
             for row in reader:
                 rows_csv.append(row)
     except IsADirectoryError as err:
-        print(err)            
+        logging.error(f"Error with the csv {err}")          
     except FileNotFoundError as err:
-        print(err)
+        logging.error(f"Error with the csv {err}")     
     except Exception as err:
-        print(err)    
+        logging.error(f"Error with the csv {err}")     
     return rows_csv
 
 
@@ -38,11 +42,11 @@ def read_json(path_to_json: str) -> dict:
         with open(path_to_json, "r") as f:
             reader = json.load(f)
     except IsADirectoryError as err:
-        print(err)            
+        logging.error(f"Error with the json {err}")           
     except FileNotFoundError as err:
-        print(err)
+        logging.error(f"Error with the json {err}") 
     except Exception as err:
-        print(err)          
+        logging.error(f"Error with the json {err}")         
     return reader
 
 
@@ -72,4 +76,4 @@ if __name__ == "__main__":
         regexp = read_json(args.directory_json)
         check_rows(rows_csv, regexp) 
     except Exception as err:
-        print(err)
+        logging.error(f"Error {err}")  

@@ -1,6 +1,10 @@
 import json
 import hashlib
+import logging
 from typing import List
+
+logger = logging.getLogger()
+logger.setLevel('INFO')
 
 """
 В этом модуле обитают функции, необходимые для автоматизированной проверки результатов ваших трудов.
@@ -43,8 +47,8 @@ def serialize_result(variant: int, checksum: str) -> None:
         with open("result.json", "w") as f:
             json.dump(params, f)
     except IsADirectoryError as err:
-        print(err)            
+        logging.error(f"Error with the json {err}")        
     except FileNotFoundError as err:
-        print(err)
+        logging.error(f"Error with the json {err}")  
     except Exception as err:
-        print(err)         
+        logging.error(f"Error with the json {err}")     
