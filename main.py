@@ -2,6 +2,19 @@ import csv
 import re
 from checksum import calculate_checksum, serialize_result
 
+REGEXPS = {
+    "email": "\w+@\w+(\.\w+){1,2}",
+    "http_status_message": "\d{3} .+",
+    "inn": "\d{12}",
+    "passport": "\d{2} \d{2} \d{6}",
+    "ip_v4": "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",
+    "latitude": "-?\d{1,2}\.\d+",
+    "hex_color": "#[0-9a-fA-F]{6}",
+    "isbn": "\d+-\d+-\d+-\d+(-\d+)?",
+    "uuid": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+    "time": "\d{1,2}:\d{2}:\d{2}\.\d{6}"
+}
+
 def check_ip(ip: str) -> bool:
     """
     Функция проверяет корректность чисел в IP
@@ -42,6 +55,23 @@ def check_time(time: str) -> bool:
         return False
 
 
+def validate_file(path: str) -> list:
+    """
+    Функция проверяет файл на наличие некорректных записей
+    :param path: путь к файлу
+    :return: список строк с некорректными записями
+    """
+    invalid_rows = list()
+    with open(path, "r", encoding="utf-16") as dataset:
+        reader = csv.DictReader(dataset, delimiter=";")
+        counter = 0
+        for row in reader:
+            if not check_row(row, REGEXPS):
+                invalid_rows.append(counter)
+            counter += 1
+    return invalid_rows
+
+
 def check_row(row: dict, regexps: dict) -> bool:
     """
     Функция проверяет строку на наличие некорректных ячеек
@@ -67,25 +97,5 @@ def check_row(row: dict, regexps: dict) -> bool:
 if __name__ == "__main__":
     variant = 45
     path = f"{variant}.csv"
-    regexps = {
-        "email": "\w+@\w+(\.\w+){1,2}",
-        "http_status_message": "\d{3} .+",
-        "inn": "\d{12}",
-        "passport": "\d{2} \d{2} \d{6}",
-        "ip_v4": "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",
-        "latitude": "-?\d{1,2}\.\d+",
-        "hex_color": "#[0-9a-fA-F]{6}",
-        "isbn": "\d+-\d+-\d+-\d+(-\d+)?",
-        "uuid": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-        "time": "\d{1,2}:\d{2}:\d{2}\.\d{6}"
-    }
-    invalid_rows = list()
-    rows = 0
-    with open(path, "r", encoding="utf-16") as dataset:
-        reader = csv.DictReader(dataset, delimiter=";")
-        counter = 0
-        for row in reader:
-            if not check_row(row, regexps):
-                invalid_rows.append(counter)
-            counter += 1
+    invalid_rows = validate_file(path)
     serialize_result(variant, calculate_checksum(invalid_rows))
