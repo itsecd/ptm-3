@@ -22,15 +22,7 @@ def find_invalid_entries(data_column: pd.Series, regexp: str) -> List[int]:
 if __name__ == "__main__":
     data = pd.read_csv("47.csv", sep=";", encoding="utf-16")
     invalid_rows = list()
-    invalid_rows.extend(find_invalid_entries(data["email"], regexps["email"]))
-    invalid_rows.extend(find_invalid_entries(data["height"], regexps["height"]))
-    invalid_rows.extend(find_invalid_entries(data["inn"], regexps["inn"]))
-    invalid_rows.extend(find_invalid_entries(data["passport"], regexps["passport"]))
-    invalid_rows.extend(find_invalid_entries(data["occupation"], regexps["occupation"]))
-    invalid_rows.extend(find_invalid_entries(data["latitude"], regexps["latitude"]))
-    invalid_rows.extend(find_invalid_entries(data["hex_color"], regexps["hex_color"]))
-    invalid_rows.extend(find_invalid_entries(data["issn"], regexps["issn"]))
-    invalid_rows.extend(find_invalid_entries(data["uuid"], regexps["uuid"]))
-    invalid_rows.extend(find_invalid_entries(data["time"], regexps["time"]))
+    for key in regexps:
+        invalid_rows.extend(find_invalid_entries(data[key], regexps[key]))
     calculated_sum = calculate_checksum(invalid_rows)
     serialize_result(47, calculated_sum)
