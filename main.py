@@ -13,6 +13,12 @@ VARIANT = 1
 
 
 def read_csv(path_to_csv: str) -> list:
+    """Функция считывает из csv файла данные и записывает их в список
+    Args:
+        path_to_csv (str): путь к csv файлу
+    Returns:
+        list: данные из файла
+    """
     data = []
     try:
         with open(path_to_csv, "r", encoding="utf16") as file:
@@ -28,6 +34,12 @@ def read_csv(path_to_csv: str) -> list:
 
 
 def read_json(path_json: str) -> dict:
+    """Функция считывает из json файла данные и записывает их в кортеж
+    Args:
+        path_json (str): путь к файлу
+    Returns:
+        dict: данные
+    """
     data = {}
     try:
         with open(path_json, "r") as json_file:
@@ -40,6 +52,13 @@ def read_json(path_json: str) -> dict:
 
 
 def validate_row(row: list, patterns: dict) -> bool:
+    """Функция проверяет каждый элемент из строки массива на валидность данных
+    Args:
+        row (list): строка из csv таблицы
+        patterns (dict): кортеж с регулярными выражениями
+    Returns:
+        bool: результат проверки
+    """
     for key, value in zip(patterns.keys(), row):
         if not re.match(patterns[key], value):
             return False
@@ -47,6 +66,13 @@ def validate_row(row: list, patterns: dict) -> bool:
 
 
 def validate_data(path_json: str, path_csv: str) -> None:
+    """Функция проходит по всему массиву данных из csv файла и 
+    записывает номера невалидных строк в список. 
+    Полученный список передается в функцию сериализации
+    Args:
+        path_json (str): путь файлу с регулярными выражениями 
+        path_csv (str): путь файлу с данными
+    """
     patterns = read_json(path_json)
     data = read_csv(path_csv)
     nonvalidate_rows = []
