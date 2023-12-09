@@ -1,8 +1,10 @@
 import csv
 import json
 import re
+from checksum import calculate_checksum, serialize_result
 
 JSON_PATH = "regexps.json"
+CSV_PATH = "25.csv"
 
 
 def read_csv(file_path: str) -> list:
@@ -19,7 +21,7 @@ def read_csv(file_path: str) -> list:
     """
     data = []
     try:
-        with open(file_path, "r") as csv_file:
+        with open(file_path, "r", encoding="utf16") as csv_file:
             reader = csv.reader(csv_file)
             next(reader)
             for row in reader:
@@ -60,34 +62,32 @@ def verify_row(row: list, expressions: dict) -> bool:
     Returns:
         bool: True if the row matches the expression, False otherwise.
     """
-    for i, exp in expressions.items():
-        if not re.match(exp, row[i]):
+    for key, value in zip(expressions.keys(), row):
+        if not re.match(expressions[key], value):
             return False
     return True
 
 
 def verify_data(path_csv: str, path_json: str) -> list:
-    """
-    Checks if the rows of a dataset match the regular expressions
-    Arguments:
-        path_csv (str): the path to the dataset
-        path_json (str): the path to the regular expressions
-    Return value:
-        list: a list of invalid row numbers
+    """Returns a list of row numbers that do not match the regular expressions.
+
+    Args:
+        path_csv (str): The path to the dataset file.
+        path_json (str): The path to the file with regular expressions.
+
+    Returns:
+        list: A list of invalid row numbers.
     """
     invalid_rows = []
-    with open(path_json, "r") as f:
-        regex_dict = json.load(f)
-    with open(path_csv, "r") as f:
-        for i, row in enumerate(f):
-            values = row.strip().split(",")
-            valid = True
-            for value, regex in zip(values, regex_dict.values()):
-                pattern = re.compile(regex)
-                match = pattern.match(value)
-                if not match:
-                    valid = False
-                    break
-            if not valid:
-                invalid_rows.append(i + 1)
+    data = read_csv(path_csv)
+    regexps = read_json(path_json)
+    for i, row in enumerate(data):
+        if not verify_row(row, regexps):
+            invalid_rows.append(i)
     return invalid_rows
+
+
+if __name__ == "__main__":
+    invalid_rows = verify_data(CSV_PATH, JSON_PATH)
+    hash_sum = calculate_checksum(invalid_rows)
+    serialize_result(25, hash_sum)
