@@ -1,5 +1,6 @@
 import csv
 import json
+import re
 
 
 def read_csv(file_path: str) -> list:
@@ -45,3 +46,19 @@ def read_json(path_json: str) -> dict:
     except Exception as e:
         print(f"Error while reading {path_json}: {e}")
         return {}
+
+
+def verify_row(row: list, expressions: dict) -> bool:
+    """Check if a row of data matches a regular expression.
+
+    Args:
+        row (list): A row from a dataset.
+        expressions (dict): A dictionary of regular expressions.
+
+    Returns:
+        bool: True if the row matches the expression, False otherwise.
+    """
+    for i, exp in expressions.items():
+        if not re.match(exp, row[i]):
+            return False
+    return True
