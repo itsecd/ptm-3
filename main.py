@@ -5,8 +5,8 @@ from checksum import serialize_result, calculate_checksum
 PATTERN = {
     "telephone": r"^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
     "http_status_message": r"^\d{3}\s[a-zA-Z0-9_ ]{1,}$",
-    "shils": r"^\d{11}$",
-    "identifier": r"^\d{2}-\d{2}/\d{2}$",
+    "shils": r"^[0-9]{11}$",
+    "identifier": r"^[0-9]{2}\-[0-9]{2}\/[0-9]{2}$",
     "ip_v4": r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
     "longitude": r"^-?((1[0-7]\d|\d?\d)(?:\.\d{1,})?|180(\.0{1,})?)$",
     "blood_type": r"^(?: AB | A | B | O) [+\u2212]$",
