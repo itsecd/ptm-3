@@ -2,6 +2,8 @@ import csv
 import json
 import re
 
+JSON_PATH = "regexps.json"
+
 
 def read_csv(file_path: str) -> list:
     """Reads data from a csv file and returns a list of rows as nested lists.
@@ -62,3 +64,30 @@ def verify_row(row: list, expressions: dict) -> bool:
         if not re.match(exp, row[i]):
             return False
     return True
+
+
+def verify_data(path_csv: str, path_json: str) -> list:
+    """
+    Checks if the rows of a dataset match the regular expressions
+    Arguments:
+        path_csv (str): the path to the dataset
+        path_json (str): the path to the regular expressions
+    Return value:
+        list: a list of invalid row numbers
+    """
+    invalid_rows = []
+    with open(path_json, "r") as f:
+        regex_dict = json.load(f)
+    with open(path_csv, "r") as f:
+        for i, row in enumerate(f):
+            values = row.strip().split(",")
+            valid = True
+            for value, regex in zip(values, regex_dict.values()):
+                pattern = re.compile(regex)
+                match = pattern.match(value)
+                if not match:
+                    valid = False
+                    break
+            if not valid:
+                invalid_rows.append(i + 1)
+    return invalid_rows
