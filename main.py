@@ -29,9 +29,26 @@ def check_valid_data(data: list) -> bool:
     Args: A list representing the row of data to be checked.
     
     Return: A boolean value indicating whether the row of data is valid or not.
-    
+
     """
     for key, value in zip(PATTERNS.keys(), data):
         if not re.match(PATTERNS[key], value):
             return False
     return True
+
+
+def get_invalid_data(data: list) -> list:
+    """
+    Get invalid data.
+
+    Args: a list representing the data to be checked.
+ 
+    Return: a list containing the row numbers that do not match the regular expressions.
+    
+    """
+    invalid_data = []
+    for i, row in enumerate(data):
+        if not check_valid_data(row):
+            invalid_data.append(i)
+    return invalid_data
+
