@@ -26,7 +26,7 @@ def read_csv_file(file_name: str) -> list:
 
     """
     data = []
-    with open(file_name, "r", newline="", encoding="utf-8") as file:
+    with open(file_name, "r", newline="", encoding="utf-16") as file:
         reader = csv.reader(file, delimiter=";")
         for i in reader:
             data.append(i)
