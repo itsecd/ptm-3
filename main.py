@@ -1,7 +1,19 @@
 import csv
 import re
+from checksum import calculate_checksum, serialize_result
 
-PATTERNS = {}
+PATTERNS = {
+    "telephone":"^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
+    "height":"^(?:0|1|2)\.\d{2}$",
+    "snils":"^\d{11}$",
+    "indentifier":"^\d{2}-\d{2}/\d{2}$",
+    "occupation":"^[a-zA-Zа-яА-ЯёЁ\s-]+$",
+    "longitude":"^-?((1[0-7]\d)|([1-9]\d?)|180)(?:\.\d+)$",
+    "blood_type":"^[ABO][+-]$",
+    "issn":"^\d{4}-\d{4}$",
+    "locale_code":"^[a-z]{2}(-[a-z]{2})?$",
+    "date":"^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])$",
+}
 
 
 def read_csv_file(file_name: str) -> list:
@@ -52,3 +64,8 @@ def get_invalid_data(data: list) -> list:
             invalid_data.append(i)
     return invalid_data
 
+
+if __name__ == "__main__":
+    invalid_data = get_invalid_data(read_csv_file("28.csv"))
+    hash_sum = calculate_checksum(invalid_data)
+    serialize_result(28, hash_sum)
