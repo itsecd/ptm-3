@@ -22,10 +22,10 @@ def read_csv(file_path: str) -> list:
     data = []
     try:
         with open(file_path, "r", encoding="utf16") as csv_file:
-            reader = csv.reader(csv_file)
-            next(reader)
+            reader = csv.reader(csv_file, delimiter=";")
             for row in reader:
                 data.append(row)
+            data.pop(0)
     except Exception as e:
         print(f"Error while reading {file_path}: {e}")
     return data
