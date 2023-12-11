@@ -6,13 +6,13 @@ PATTERNS = {
     "telephone":"^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
     "height":"^(?:0|1|2)\.\d{2}$",
     "snils":"^\d{11}$",
-    "indentifier":"^\d{2}-\d{2}/\d{2}$",
+    "identifier":"^\d{2}-\d{2}/\d{2}$",
     "occupation":"^[a-zA-Zа-яА-ЯёЁ\s-]+$",
-    "longitude":"^-?((1[0-7]\d)|([1-9]\d?)|180)(?:\.\d+)$",
-    "blood_type":"^[ABO][+-]$",
+    "longitude": "^-?((180(\\.0+)?|1[0-7]?\\d(\\.\\d+)?|\\d{1,2}(\\.\\d+)?)|0(\\.\\d+)?)$",
+    "blood_type":"^(?:A|B|AB|O)(?:\+|\u2212)$",
     "issn":"^\d{4}-\d{4}$",
     "locale_code":"^[a-z]{2}(-[a-z]{2})?$",
-    "date":"^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])$",
+    "date":"^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-9]|3[0-1])$",
 }
 
 
@@ -62,6 +62,7 @@ def get_invalid_data(data: list) -> list:
     for i, row in enumerate(data):
         if not check_valid_data(row):
             invalid_data.append(i)
+    print(len(invalid_data))        
     return invalid_data
 
 
