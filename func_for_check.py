@@ -24,14 +24,3 @@ def check_time(time: str) -> bool:
     """
     time = list(map(int, re.findall(r'\d+', time)))
     return 0 < time[0] < 24 and 0 < time[1] < 60 and 0 < time[2] < 60
-
-
-def check_latitude(latitude: str) -> bool:
-    """
-    Функция, которая проверяет широту
-
-    :param latitude: широта для проверки
-    :return: возвращет True, если latitude прошела валидацию, False - иначе
-    """
-    latitude = float(latitude)
-    return -180 < latitude < 180

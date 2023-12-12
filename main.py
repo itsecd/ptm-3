@@ -2,8 +2,9 @@ import re
 import os
 import pandas as pd
 from checksum import calculate_checksum, serialize_result
-from func_for_check import check_latitude, check_ip, check_time
+from func_for_check import check_ip, check_time
 from typing import Callable
+import logging
 
 PATTERNS = {
     "email": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
@@ -42,7 +43,7 @@ def check_column(dataset: pd.DataFrame, column: str, pattern: str, check_correct
         else:
             if not re.fullmatch(pattern, dataset[column][i], re.X) or not check_correct(dataset[column][i]):
                 result.append(i)
-    print(f"In '{column}' find {len(result)} incorrect cells")
+    logging.info(f"In '{column}' find {len(result)} incorrect cells")
     return result
 
 
@@ -60,19 +61,18 @@ def start_check(dataset: pd.DataFrame) -> set:
         elif col == "ip_v4":
             result.update(check_column(
                 dataset, col, PATTERNS[col], check_ip))
-        elif col == "latitude":
-            result.update(check_column(
-                dataset, col, PATTERNS[col], check_latitude))
         else:
             result.update(check_column(dataset, col, PATTERNS[col]))
     return result
 
 
 if __name__ == "__main__":
+    logging.basicConfig(filename='loginfo.log', level=logging.DEBUG,
+                        format='%(asctime)s %(levelname)s %(message)s')
     os.system("cls")
     variant = 13
     dataset = pd.read_csv(f"{variant}.csv", sep=";", encoding="utf-16")
     result = start_check(dataset)
-    print(len(result))
-    print(calculate_checksum(list(result)))
+    logging.info(f"Find incorrect - {len(result)}")
+    logging.info(f"Checksum - {calculate_checksum(list(result))}")
     serialize_result(variant, calculate_checksum(list(result)))
