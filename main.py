@@ -1,54 +1,47 @@
-import os
 import pandas as pd
 import json
 import re
+import logging
 from checksum import calculate_checksum, serialize_result
 
-V = 23
+VARIANT = 23
 
-def read_regexps(path_to_file ="regexp_me.json") -> json:
+def _read_regexps(path_to_file="regexp_me.json") -> dict:
     '''
-    Считывание regexp'ов 
+    Reading regexp patterns from a file
     '''
-    rs = []
     with open(path_to_file, 'r', encoding='utf-8') as fp:
-        rs = json.load(fp)
-    return rs
+        return json.load(fp)
+
+# Initialize constants by reading from the file
+REGEX_PATTERNS = _read_regexps()
 
 def validate_dataframe(df: pd.DataFrame) -> list:
-    """Валидация строк
+    """Validates rows in a DataFrame
 
     Args:
-        df (pd.DataFrame): DataFrame
+        df (pd.DataFrame): DataFrame to validate
 
     Returns:
-        list: Список номеров невалидных строк
+        list: List of indices of invalid rows
     """
     invalid_rows = []
-    
-    regexps = read_regexps() 
-
-    # Regular expressions for validation
-
     for index, row in df.iterrows():
-        if not (re.match(regexps["email"],row['email']) and
-                re.match(regexps["height"],row['height']) and
-                re.match(regexps["inn"],row['inn']) and
-                re.match(regexps["passport"],row['passport']) and
-                re.match(regexps["occupation"],row['occupation']) and
-                re.match(regexps["latitude"],row['latitude']) and # Latitude as a decimal number
-                re.match(regexps["hex_color"],row['hex_color']) and
-                re.match(regexps["issn"],row['issn']) and
-                re.match(regexps["uuid"],row['uuid']) and
-                re.match(regexps["time"],row['time'])):
+        # Iterate through each key and validate using the corresponding regex pattern
+        if not all(re.match(REGEX_PATTERNS[key], str(row[key])) for key in REGEX_PATTERNS if key in row):
             invalid_rows.append(index)
-
     return invalid_rows
 
+
 if __name__ == "__main__":
-    os.system("cls")
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+    
     dataset = pd.read_csv("23.csv", sep=";", encoding="utf-16")
     
+    logger.info("Started validation")
     result = validate_dataframe(dataset)
-    serialize_result(V,calculate_checksum(list(result)))
-    print("success")
+    logger.info(f"Validation completed")
+    
+    serialize_result(VARIANT,calculate_checksum(list(result)))
+    logger.info("Success")
