@@ -8,6 +8,7 @@ from typing import List
 
 
 def calculate_checksum(row_numbers: List[int]) -> str:
+
     """
     Вычисляет md5 хеш от списка целочисленных значений.
 
@@ -17,8 +18,7 @@ def calculate_checksum(row_numbers: List[int]) -> str:
 
     Надеюсь, я расписал это максимально подробно.
     Хотя что-то мне подсказывает, что обязательно найдется человек, у которого с этим возникнут проблемы.
-    Которому я отвечу, что все написано в докстринге ¯\_(ツ)_/¯
-
+    Которому я отвечу, что все написано в докстринге 
     :param row_numbers: список целочисленных номеров строк csv-файла, на которых были найдены ошибки валидации
     :return: md5 хеш для проверки через github action
     """
@@ -27,6 +27,7 @@ def calculate_checksum(row_numbers: List[int]) -> str:
 
 
 def serialize_result(variant: int, checksum: str) -> None:
+
     """
     Метод для сериализации результатов лабораторной пишите сами.
     Вам нужно заполнить данными - номером варианта и контрольной суммой - файл, лежащий в корне репозитория.
@@ -38,4 +39,10 @@ def serialize_result(variant: int, checksum: str) -> None:
     :param variant: номер вашего варианта
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
-    pass
+    result = {
+        "variant": str(variant),
+        "checksum": checksum
+    }
+    with open('result.json', 'w') as json_file:
+        import json
+        json.dump(result, json_file, indent=2)
