@@ -4,6 +4,8 @@ from checksum import calculate_checksum, serialize_result
 from regular_expressions import regexps
 from typing import List
 
+
+
 def find_invalid_rows(data: pd.Series, regexp: str) -> List[int]:
 
     invalid_rows = list()
