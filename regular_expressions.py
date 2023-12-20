@@ -2,11 +2,11 @@ regexps = {
     "telephone": r"^\+7\-\(\d{3}\)\-\d{3}\-\d{2}\-\d{2}$",
     "height": r"^[12]\.\d{2}$",
     "snils": r"^\d{11}$",
-    "identifier": r"^\d{2}-\d{2}/\d{2}$",
+    "identifier": r"^\d{2}-\d{2}\/\d{2}$",
     "occupation": r"^[А-Я]?[а-я]+((?:\s|-)[а-я]+)*$",
     "longitude": r"^-?\d{0,3}\.\d{6}$",
-    "blood_type": r"^(?:[AB]{,2}|O)[+−]?$",
+    "blood_type": r"^(?:[AB]{1,2}|O)[+−]$",
     "issn": r"^\d{4}\-\d{4}$",  
-    "locale_code": r"^[a-z]{1}(?:\-[a-z])?$",
-    "date": r"^\d{4}\-\d{2}\-\d{2}$"
+    "locale_code": r"^[a-z]{1,2}(?:\-[a-z])?$",
+    "date": r"^(?:19|20)\d{2}\-\d{2}\-\d{2}$"
 }
