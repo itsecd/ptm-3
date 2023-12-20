@@ -81,6 +81,30 @@ def validate_data(path_json: str, path_csv: str) -> None:
             nonvalidate_rows.append(i)
     serialize_result(VARIANT, calculate_checksum(nonvalidate_rows))
 
+def validation_report(path_json: str, path_csv: str) -> None:
+    """Функция выводит отчет по валидации файла в консоль"""
+    patterns = read_json(path_json)
+    data = read_csv(path_csv)
+    invalid_counts = {key: 0 for key in patterns.keys()}
+    total_invalid_records = 0
+
+    for i, row in enumerate(data, start=1):
+        for key, value in zip(patterns.keys(), row):
+            if not re.match(patterns[key], value):
+                invalid_counts[key] += 1
+                total_invalid_records += 1
+
+    print("\n" + "=" * 40)
+    print("Отчет по валидации файла:")
+    print("-" * 40)
+
+    for key, count in invalid_counts.items():
+        print(f"{key}: {count} ошибочных значений")
+
+    print("-" * 40)
+    print(f"Всего невалидных записей: {total_invalid_records}")
+    print("=" * 40 + "\n")
 
 if __name__ == "__main__":
     validate_data(REGEXPS_PATH, CSV_PATH)
+    validation_report(REGEXPS_PATH, CSV_PATH)
