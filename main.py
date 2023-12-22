@@ -1,5 +1,6 @@
 import re
 import csv
+from checksum import calculate_checksum, serialize_result
 
 EXPRESSIONS = {
     "email": "^[a-zA-Z0-9._+-]+@[a-z]+\.[a-z]{2,}$",
@@ -42,5 +43,6 @@ def invalid_data(path_csv: str) -> list:
 
 
 if __name__ == "__main__":
+    variant = 61
     invalid_rows = invalid_data("61.csv")
-
+    serialize_result(variant, calculate_checksum(invalid_rows))
